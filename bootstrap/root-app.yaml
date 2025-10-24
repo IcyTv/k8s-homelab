@@ -1,0 +1,22 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: root
+  namespace: argocd
+spec:
+  project: default
+  
+  source:
+    repoURL: https://github.com/IcyTv/k8s-homelab.git
+    targetRevision: HEAD
+    path: apps
+  
+  # Destination: The same cluster
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default
+    
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
