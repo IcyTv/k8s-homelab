@@ -32,6 +32,10 @@ cat <<'EOF' >"$VALUES_FILE"
 configs:
   params:
     server.insecure: true
+redis:
+  enabled: true
+redisSecretInit:
+  enabled: false
 server:
   ingress:
     enabled: true
@@ -49,8 +53,6 @@ server:
       traefik.ingress.kubernetes.io/router.entrypoints: websecure
       traefik.ingress.kubernetes.io/service.serversscheme: http
     tls: false
-redis:
-  enabled: false
 EOF
 
 helm upgrade --install "$RELEASE_NAME" argocd/"$CHART_NAME" \
