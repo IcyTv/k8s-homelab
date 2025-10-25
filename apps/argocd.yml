@@ -20,6 +20,20 @@ spec:
             server.insecure: true
           cm:
             kustomize.buildOptions: --enable-helm
+
+            oidc.config: |
+              name: Authentik
+              issuer: https://auth.icytv.de/application/o/argo-cd/
+              clientID: V7YyPkI3DYF2qiR145iQq2lKZmsZP9Y8Ki84XDPY
+              clientSecret: $oidc.clientSecret
+              requestedScopes: ["openid", "profile", "email", "groups"]
+              groupsClaim: groups
+          rbac:
+            policy.csv: |
+              g, system:authenticated, role:admin
+          secret:
+            oidcClientSecretExistingSecret: argocd-oidc-client
+            oidcClientSecretExistingSecretKey: clientSecret
         redis:
           enabled: true
           auth:
