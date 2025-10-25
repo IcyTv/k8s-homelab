@@ -18,6 +18,8 @@ spec:
         configs:
           params:
             server.insecure: true
+        redis:
+          enabled: true
         server:
           ingress:
             enabled: true
