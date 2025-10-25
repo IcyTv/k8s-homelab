@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: audiobookshelf
+  namespace: audiobookshelf
+  labels:
+    app.kubernetes.io/name: audiobookshelf
+    app.kubernetes.io/part-of: audiobookshelf
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: audiobookshelf
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: audiobookshelf
+    spec:
+      containers:
+        - name: audiobookshelf
+          image: ghcr.io/advplyr/audiobookshelf:latest
+          ports:
+            - containerPort: 80
+              name: http
+          env:
+            - name: AUDIOBOOKSHELF_UID
+              value: "99"
+            - name: AUDIOBOOKSHELF_GID
+              value: "100"
+            - name: TZ
+              value: Europe/Berlin
+          volumeMounts:
+            - name: config
+              mountPath: /config
+            - name: audiobooks
+              mountPath: /audiobooks
+              readOnly: true
+            - name: podcasts
+              mountPath: /podcasts
+              readOnly: true
+            - name: metadata
+              mountPath: /metadata
+      volumes:
+        - name: config
+          hostPath:
+            path: /home/michael/media/config
+            type: Directory
+        - name: audiobooks
+          hostPath:
+            path: /home/michael/media/audiobooks
+            type: Directory
+        - name: podcasts
+          hostPath:
+            path: /home/michael/media/podcasts
+            type: Directory
+        - name: metadata
+          hostPath:
+            path: /home/michael/media/metadata
+            type: Directory
+      securityContext:
+        runAsUser: 99
+        runAsGroup: 100
+        fsGroup: 100
+        fsGroupChangePolicy: OnRootMismatch
