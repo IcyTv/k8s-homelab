@@ -8,12 +8,13 @@ spec:
   source:
     repoURL: https://github.com/IcyTv/k8s-homelab.git
     targetRevision: HEAD
+    path: manifests/authentik
     helm:
       chart: authentik
       repo: https://charts.goauthentik.io/
-      version: 2025.8.4
+      targetRevision: 2025.8.4
       valueFiles:
-        - manifests/authentik/values.yaml
+        - values.yaml
   destination:
     server: https://kubernetes.default.svc
     namespace: authentik
