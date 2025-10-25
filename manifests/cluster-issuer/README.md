@@ -8,4 +8,4 @@ To manage the secret via Sealed Secrets, generate or rotate it with:
 ./scripts/create-sealed-secret.sh cert-manager cloudflare-api-token api-token="<cloudflare-api-token>"
 ```
 
-The script writes `cert-manager-cloudflare-api-token.sealedsecret.yaml` into the manifests folder. Commit the generated file to keep the token under GitOps control. Whenever the token changes, rerun the script with the new value and commit the update.
+The script writes `cloudflare-api-token.sealedsecret.yaml` into this folder. Commit the generated file to keep the token under GitOps control. Whenever the token changes, rerun the script with the new value and commit the update.

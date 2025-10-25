@@ -30,8 +30,8 @@ for pair in "$@"; do
   SECRET_ARGS+=("--from-literal=${pair}")
 done
 
-OUTPUT_DIR="${OUTPUT_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/manifests}"
-OUTPUT_FILE="${OUTPUT_FILE:-$OUTPUT_DIR/${SECRET_NAMESPACE}-${SECRET_NAME}.sealedsecret.yaml}"
+OUTPUT_DIR="${OUTPUT_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/manifests/cluster-issuer}"
+OUTPUT_FILE="${OUTPUT_FILE:-$OUTPUT_DIR/${SECRET_NAME}.sealedsecret.yaml}"
 
 mkdir -p "$(dirname "$OUTPUT_FILE")"
 
