@@ -21,12 +21,18 @@ spec:
             allowCrossNamespace: true
 
         # Set up entrypoints (ports)
-        ports:
+        entryPoints:
           web:
-            redirectTo: websecure
+            address: ":80"
+            http:
+              redirections:
+                entryPoint:
+                  to: websecure
+                  scheme: https
           websecure:
-            tls:
-              enabled: true
+            address: ":443"
+            tls: {}
+              
         
         # This creates a LoadBalancer service, which K3s provides
         service:
