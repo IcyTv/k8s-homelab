@@ -19,6 +19,7 @@ spec:
           params:
             server.insecure: true
           cm:
+            url: https://argocd.icytv.de
             kustomize.buildOptions: --enable-helm
 
             oidc.config: |
