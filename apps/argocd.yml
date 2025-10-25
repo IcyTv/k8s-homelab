@@ -1,49 +1,46 @@
+# In Git: apps/argocd.yml
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: argocd
   namespace: argocd
-  # We add a finalizer so ArgoCD can't delete itself
   finalizers:
-    - resources-finalizer.argocd.argoproj.io
+    - resources-finalizer.argocd.argocd.io
 spec:
   project: default
-  
-  # Source: ArgoCD's own Helm Chart
   source:
     repoURL: https://argoproj.github.io/argo-helm
     chart: argo-cd
-    targetRevision: 6.8.1 # Use a specific, recent version
-    
-    # This is where we configure ArgoCD itself, including its Ingress
+    targetRevision: 6.8.1 # Or a recent stable version
     helm:
       values: |
         server:
           ingress:
             enabled: true
             ingressClassName: traefik
-            hostname: "argocd.icytv.de" # <-- YOUR DOMAIN
+            hostname: "argocd.icytv.de"
             annotations:
-              cert-manager.io/cluster-issuer: "letsencrypt"
-            tls:
-              - secretName: argocd-server-tls
-                hosts:
-                  - "argocd.icytv.de" # <-- YOUR DOMAIN
-          
-          # This is the gRPC setting for the CLI we did manually before
-          # We add it to the Ingress resource
+              traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+              traefik.ingress.kubernetes.io/service.serversscheme: "http"
+            tls: false
+
           ingressGrpc:
             enabled: true
+            hostname: "grpc.argocd.icytv.de"
+            annotations:
+              traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+              traefik.ingress.kubernetes.io/service.serversscheme: "http"
+            tls: false
 
-  # Destination: Install into the 'argocd' namespace
+
   destination:
     server: https://kubernetes.default.svc
     namespace: argocd
     
-  # Sync Policy: Keep it synced automatically
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
     syncOptions:
     - CreateNamespace=true
+    - Replace=true
