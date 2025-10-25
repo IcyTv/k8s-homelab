@@ -34,16 +34,17 @@ spec:
               traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
               traefik.ingress.kubernetes.io/service.serversscheme: "http"
             tls: false
-
+        redis:
+          enabled: false
 
   destination:
     server: https://kubernetes.default.svc
     namespace: argocd
-    
+
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
     syncOptions:
-    - CreateNamespace=true
-    - Replace=true
+      - CreateNamespace=true
+      - Replace=true
