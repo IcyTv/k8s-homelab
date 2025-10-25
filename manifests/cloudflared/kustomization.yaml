@@ -6,6 +6,9 @@ resources:
   - deployment.yaml
   - cloudflared-credentials.sealedsecret.yaml
 
+configurations:
+  - kustomizeconfig.yaml
+
 configMapGenerator:
   - name: cloudflared-config
     files:
@@ -17,3 +20,10 @@ configMapGenerator:
         app.kubernetes.io/instance: primary
       annotations:
         reconciler.fluxcd.io/retain: "true"
+
+vars:
+  - name: CLOUDFLARED_CONFIGMAP_NAME
+    objref:
+      apiVersion: v1
+      kind: ConfigMap
+      name: cloudflared-config
