@@ -1,9 +1,10 @@
-# In Git: apps/argocd.yml
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: argocd
   namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
   finalizers:
     - resources-finalizer.argocd.argocd.io
 spec:
@@ -23,17 +24,28 @@ spec:
             ingressClassName: traefik
             hostname: argocd.icytv.de
             annotations:
-              traefik.ingress.kubernetes.io/router.entrypoints: websecure
+              cert-manager.io/cluster-issuer: letsencrypt
+              traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
+              traefik.ingress.kubernetes.io/router.middlewares: argocd-https-redirect@kubernetescrd
               traefik.ingress.kubernetes.io/service.serversscheme: http
-            tls: false
+            tls: true
+            extraTls:
+              - hosts:
+                  - argocd.icytv.de
+                secretName: argocd-tls
 
           ingressGrpc:
             enabled: true
             hostname: grpc.argocd.icytv.de
             annotations:
+              cert-manager.io/cluster-issuer: letsencrypt
               traefik.ingress.kubernetes.io/router.entrypoints: websecure
               traefik.ingress.kubernetes.io/service.serversscheme: http
-            tls: false
+            tls: true
+            extraTls:
+              - hosts:
+                  - grpc.argocd.icytv.de
+                secretName: argocd-grpc-tls
         redis:
           enabled: false
 
