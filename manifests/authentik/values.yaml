@@ -6,7 +6,6 @@ postgresql:
 redis:
   enabled: true
 environment:
-  AUTHENTIK_SECRET_KEY: "${AUTHENTIK_SECRET_KEY}"
   AUTHENTIK_EMAIL__HOST: ""
   AUTHENTIK_EMAIL__PORT: ""
   AUTHENTIK_EMAIL__USERNAME: ""
