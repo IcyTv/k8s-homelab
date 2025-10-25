@@ -1,21 +1,24 @@
 server:
   ingress:
     enabled: false
+    hosts:
+      - auth.icytv.de
 postgresql:
   enabled: true
 redis:
   enabled: true
-environment:
-  AUTHENTIK_EMAIL__HOST: ""
-  AUTHENTIK_EMAIL__PORT: ""
-  AUTHENTIK_EMAIL__USERNAME: ""
-  AUTHENTIK_EMAIL__PASSWORD: ""
-  AUTHENTIK_EMAIL__USE_TLS: "false"
-  AUTHENTIK_EMAIL__USE_SSL: "false"
-  AUTHENTIK_EMAIL__FROM: "noreply@icytv.de"
-extraSecretEnvs:
-  - name: AUTHENTIK_SECRET_KEY
-    valueFrom:
-      secretKeyRef:
-        name: secret-key
-        key: secret-key
+server:
+  env:
+    - name: AUTHENTIK_SECRET_KEY
+      valueFrom:
+        secretKeyRef:
+          name: secret-key
+          key: secret-key
+
+worker:
+  env:
+    - name: AUTHENTIK_SECRET_KEY
+      valueFrom:
+        secretKeyRef:
+          name: secret-key
+          key: secret-key
