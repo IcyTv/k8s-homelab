@@ -11,7 +11,7 @@ spec:
   source:
     repoURL: https://argoproj.github.io/argo-helm
     chart: argo-cd
-    targetRevision: 9.0.5 # Or a recent stable version
+    targetRevision: 9.0.5
     helm:
       values: |
         configs:
@@ -21,18 +21,18 @@ spec:
           ingress:
             enabled: true
             ingressClassName: traefik
-            hostname: "argocd.icytv.de"
+            hostname: argocd.icytv.de
             annotations:
-              traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
-              traefik.ingress.kubernetes.io/service.serversscheme: "http"
+              traefik.ingress.kubernetes.io/router.entrypoints: websecure
+              traefik.ingress.kubernetes.io/service.serversscheme: http
             tls: false
 
           ingressGrpc:
             enabled: true
-            hostname: "grpc.argocd.icytv.de"
+            hostname: grpc.argocd.icytv.de
             annotations:
-              traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
-              traefik.ingress.kubernetes.io/service.serversscheme: "http"
+              traefik.ingress.kubernetes.io/router.entrypoints: websecure
+              traefik.ingress.kubernetes.io/service.serversscheme: http
             tls: false
         redis:
           enabled: false
