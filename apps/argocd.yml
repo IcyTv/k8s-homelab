@@ -34,6 +34,7 @@ spec:
           secret:
             oidcClientSecretExistingSecret: argocd-oidc-client
             oidcClientSecretExistingSecretKey: clientSecret
+            createSecret: false
         
         redis:
           enabled: true
@@ -55,8 +56,6 @@ spec:
         admin: {}
 
         server:
-          secretkeyExistingSecret: argocd-server-key
-          secretkeyExistingSecretKey: secretkey
           ingress:
             enabled: true
             ingressClassName: traefik
