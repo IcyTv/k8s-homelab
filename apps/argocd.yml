@@ -20,6 +20,8 @@ spec:
             server.insecure: true
         redis:
           enabled: true
+        redisSecretInit:
+          enabled: false
         server:
           ingress:
             enabled: true
