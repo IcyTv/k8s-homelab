@@ -3,17 +3,25 @@ server:
     enabled: false
     hosts:
       - auth.icytv.de
-postgresql:
-  enabled: true
-redis:
-  enabled: true
-server:
   env:
     - name: AUTHENTIK_SECRET_KEY
       valueFrom:
         secretKeyRef:
           name: secret-key
           key: secret-key
+    - name: AUTHENTIK_POSTGRESQL__PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: authentik-postgres  # The secret we just made
+          key: password            # The key inside that secret
+postgresql:
+  enabled: true
+  auth:
+    existingSecret: authentik-postgres
+    secretKeys:
+      passwordKey: password
+redis:
+  enabled: true
 
 worker:
   env:
@@ -22,3 +30,8 @@ worker:
         secretKeyRef:
           name: secret-key
           key: secret-key
+    - name: AUTHENTIK_POSTGRESQL__PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: authentik-postgres  # The secret we just made
+          key: password            # The key inside that secret
