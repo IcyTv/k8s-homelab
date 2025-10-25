@@ -6,10 +6,12 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://charts.goauthentik.io/
-    chart: authentik
-    targetRevision: 2024.2.2
+    repoURL: https://github.com/IcyTv/k8s-homelab.git
+    targetRevision: HEAD
     helm:
+      chart: authentik
+      repo: https://charts.goauthentik.io/
+      version: 2025.8.4
       valueFiles:
         - manifests/authentik/values.yaml
   destination:
