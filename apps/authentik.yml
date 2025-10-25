@@ -5,16 +5,18 @@ metadata:
   namespace: argocd
 spec:
   project: default
-  source:
-    repoURL: https://github.com/IcyTv/k8s-homelab.git
-    targetRevision: HEAD
-    path: manifests/authentik
-    helm:
+  sources:
+    - repoURL: https://charts.goauthentik.io/
       chart: authentik
-      repo: https://charts.goauthentik.io/
-      targetRevision: 2025.8.4
-      valueFiles:
-        - values.yaml
+      targetRevision: 2025.8.4 
+      helm:
+        valueFiles:
+          - $values/manifests/authentik/values.yaml
+
+    - repoURL: https://github.com/IcyTv/k8s-homelab.git
+      targetRevision: HEAD
+      ref: values
+
   destination:
     server: https://kubernetes.default.svc
     namespace: authentik
