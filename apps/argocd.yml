@@ -18,13 +18,12 @@ spec:
         configs:
           params:
             server.insecure: true
+          cm:
+            kustomize.buildOptions: --enable-helm
         redis:
           enabled: true
         redisSecretInit:
           enabled: false
-        configs:
-          cm:
-            kustomize.buildOptions: --enable-helm
         server:
           ingress:
             enabled: true
