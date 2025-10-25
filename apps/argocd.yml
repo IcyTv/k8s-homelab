@@ -22,9 +22,21 @@ spec:
             kustomize.buildOptions: --enable-helm
         redis:
           enabled: true
+          auth:
+            enabled: true
+            username: default
+            existingSecret: argocd-redis-password
+            existingSecretPasswordKey: password
         redisSecretInit:
           enabled: false
+        global:
+          redis:
+            username: default
+            existingSecret: argocd-redis-password
+            existingSecretPasswordKey: password
         server:
+          secretkeyExistingSecret: argocd-server-key
+          secretkeyExistingSecretKey: secretkey
           ingress:
             enabled: true
             ingressClassName: traefik
