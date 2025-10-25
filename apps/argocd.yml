@@ -11,9 +11,12 @@ spec:
   source:
     repoURL: https://argoproj.github.io/argo-helm
     chart: argo-cd
-    targetRevision: 6.8.1 # Or a recent stable version
+    targetRevision: 9.0.5 # Or a recent stable version
     helm:
       values: |
+        configs:
+          params:
+            server.insecure: true
         server:
           ingress:
             enabled: true
