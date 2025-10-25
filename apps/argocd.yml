@@ -48,6 +48,8 @@ spec:
                 secretName: argocd-grpc-tls
         redis:
           enabled: false
+        redisSecretInit:
+          enabled: false
 
   destination:
     server: https://kubernetes.default.svc
