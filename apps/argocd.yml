@@ -22,6 +22,9 @@ spec:
           enabled: true
         redisSecretInit:
           enabled: false
+        configs:
+          cm:
+            kustomize.buildOptions: --enable-helm
         server:
           ingress:
             enabled: true
