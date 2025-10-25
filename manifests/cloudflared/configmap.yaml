@@ -15,9 +15,11 @@ data:
     credentials-file: /etc/cloudflared/credentials.json
     metrics: 0.0.0.0:2000
     no-autoupdate: true
+    originRequest:
+      noTLSVerify: true
     ingress:
       - hostname: icytv.de
-        service: http://traefik.traefik.svc.cluster.local:80
+        service: https://traefik.traefik.svc.cluster.local:443
       - hostname: "*.icytv.de"
-        service: http://traefik.traefik.svc.cluster.local:80
+        service: https://traefik.traefik.svc.cluster.local:443
       - service: http_status:404
