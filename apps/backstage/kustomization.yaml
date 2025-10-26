@@ -7,3 +7,5 @@ resources:
   - postgres-service.yaml
   - backstage-secrets.yaml
   - backstage.yaml
+  - backstage-service.yaml
+  - backstage-ingress.yaml

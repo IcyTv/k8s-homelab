@@ -3,15 +3,17 @@ kind: Deployment
 metadata:
   name: backstage
   namespace: backstage
+  labels:
+    app.kubernetes.io/name: backstage
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: backstage
+      app.kubernetes.io/name: backstage
   template:
     metadata:
       labels:
-        app: backstage
+        app.kubernetes.io/name: backstage
     spec:
       containers:
         - name: backstage
