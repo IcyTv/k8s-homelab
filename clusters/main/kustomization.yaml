@@ -3,10 +3,4 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 resources:
-  - ../../apps/base
-  - ../../apps/cert-manager
-  - ../../apps/cluster-issuer
-  - ../../apps/authentik
-  - ../../apps/traefik
-  - ../../apps/audiobookshelf
-  - ../../apps/cloudflared
+  - ../../apps
