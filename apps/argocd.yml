@@ -42,12 +42,6 @@ spec:
         
         redis:
           enabled: true
-          auth:
-            enabled: true
-            username: default
-            existingSecret: argocd-redis-password
-            existingSecretPasswordKey: password
-            
         redisSecretInit:
           enabled: false
 
