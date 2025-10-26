@@ -9,6 +9,12 @@ metadata:
     - resources-finalizer.argocd.argocd.io
 spec:
   project: default
+  ignoreDifferences:
+  - group: ""
+    kind: Secret
+    name: argocd-secret
+    jsonPointers:
+    - /data
   source:
     repoURL: https://argoproj.github.io/argo-helm
     chart: argo-cd
@@ -32,8 +38,6 @@ spec:
             policy.csv: |
               g, system:authenticated, role:admin
           secret:
-            oidcClientSecretExistingSecret: argocd-oidc-client
-            oidcClientSecretExistingSecretKey: clientSecret
             createSecret: false
         
         redis:
@@ -63,7 +67,7 @@ spec:
             annotations:
               cert-manager.io/cluster-issuer: letsencrypt
               traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
-              traefik.ingress.kubernetes.io/router.middlewares: traefik-httpsM-redirect@kubernetescrd
+              traefik.ingress.kubernetes.io/router.middlewares: https-redirect@kubernetescrd
               traefik.ingress.kubernetes.io/service.serversscheme: http
             tls: true
             extraTls:
