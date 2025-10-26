@@ -1,0 +1,16 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: audiobookshelf
+  namespace: flux-system
+spec:
+  interval: 5m
+  dependsOn:
+    - name: namespaces
+  path: ./manifests/audiobookshelf
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  targetNamespace: audiobookshelf
+  timeout: 3m

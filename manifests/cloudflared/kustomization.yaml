@@ -2,28 +2,44 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 resources:
-  - namespace.yaml
-  - deployment.yaml
-  - cloudflared-credentials.yaml
+- namespace.yaml
+- deployment.yaml
+- cloudflared-credentials.yaml
 
 configurations:
-  - kustomizeconfig.yaml
+- kustomizeconfig.yaml
 
 configMapGenerator:
-  - name: cloudflared-config
-    files:
-      - config.yaml=config/config.yaml
-    options:
-      labels:
-        app.kubernetes.io/name: cloudflared
-        app.kubernetes.io/component: tunnel
-        app.kubernetes.io/instance: primary
-      annotations:
-        reconciler.fluxcd.io/retain: "true"
+- files:
+  - config.yaml=config/config.yaml
+  name: cloudflared-config
+  options:
+    annotations:
+      reconciler.fluxcd.io/retain: "true"
+    labels:
+      app.kubernetes.io/component: tunnel
+      app.kubernetes.io/instance: primary
+      app.kubernetes.io/name: cloudflared
 
-vars:
-  - name: CLOUDFLARED_CONFIGMAP_NAME
-    objref:
-      apiVersion: v1
-      kind: ConfigMap
-      name: cloudflared-config
+replacements:
+- source:
+    kind: ConfigMap
+    name: cloudflared-config
+    version: v1
+  targets:
+  - fieldPaths:
+    - spec.template.metadata.annotations.checksum/config
+    select:
+      group: apps
+      kind: Deployment
+      name: cloudflared
+      namespace: cloudflared
+      version: v1
+  - fieldPaths:
+    - spec.template.spec.volumes.0.configMap.name
+    select:
+      group: apps
+      kind: Deployment
+      name: cloudflared
+      namespace: cloudflared
+      version: v1
