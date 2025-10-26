@@ -36,7 +36,7 @@ spec:
               groupsClaim: groups
           rbac:
             policy.csv: |
-              g, system:authenticated, role:admin
+              g, argocd-admins, role:admin
           secret:
             createSecret: false
         
@@ -50,12 +50,6 @@ spec:
             
         redisSecretInit:
           enabled: false
-          
-        global:
-          redis:
-            username: default
-            existingSecret: argocd-redis-password
-            existingSecretPasswordKey: password
 
         admin: {}
 
