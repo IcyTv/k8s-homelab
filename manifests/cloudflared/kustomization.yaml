@@ -4,7 +4,7 @@ kind: Kustomization
 resources:
   - namespace.yaml
   - deployment.yaml
-  - cloudflared-credentials.sealedsecret.yaml
+  - cloudflared-credentials.yaml
 
 configurations:
   - kustomizeconfig.yaml
