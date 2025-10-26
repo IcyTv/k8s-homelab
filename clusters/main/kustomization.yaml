@@ -1,0 +1,31 @@
+# clusters/main/kustomization.yaml
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# List all the Flux CRD files that define your applications
+resources:
+  # Base resources (like namespaces)
+  - ../../apps/base/kustomization.yaml
+
+  # Cert-Manager
+  - ../../apps/cert-manager/helmrepo.yaml
+  - ../../apps/cert-manager/helmrelease.yaml
+  - ../../apps/cert-manager/kustomization.yaml # Applies the namespace + HR
+
+  # ClusterIssuer (depends on Cert-Manager)
+  - ../../apps/cluster-issuer/kustomization.yaml
+
+  # Authentik (needs Helm Repo defined for its own Kustomize build)
+  - ../../apps/authentik/helmrepo.yaml
+  - ../../apps/authentik/kustomization.yaml
+
+  # Traefik
+  - ../../apps/traefik/helmrepo.yaml
+  - ../../apps/traefik/helmrelease.yaml
+  - ../../apps/traefik/kustomization-middleware.yaml # Apply middleware
+
+  # Audiobookshelf
+  - ../../apps/audiobookshelf/kustomization.yaml
+
+  # Cloudflared
+  - ../../apps/cloudflared/kustomization.yaml
