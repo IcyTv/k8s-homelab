@@ -6,3 +6,5 @@ resources:
   - ingress.yaml
   - secret-key.yaml
   - authentik-postgres.yaml
+  - helmrepo.yaml
+  - helmrelease.yaml
