@@ -6,7 +6,7 @@ metadata:
 spec:
   interval: 5m
   dependsOn:
-    - name: cert-manager
+    - name: base
   path: ./manifests/cluster-issuer
   prune: true
   sourceRef:
