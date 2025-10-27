@@ -1,11 +1,11 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  - ./base
-  - ./cert-manager
-  - ./cluster-issuer
-  - ./authentik
-  - ./traefik
-  - ./audiobookshelf
-  - ./cloudflared
-  - ./backstage
+  - ./base/kustomization.yaml
+  - ./cert-manager/kustomization.yaml
+  - ./cluster-issuer/kustomization.yaml
+  - ./authentik/kustomization.yaml
+  - ./traefik/kustomization.yaml
+  - ./audiobookshelf/kustomization.yaml
+  - ./cloudflared/kustomization.yaml
+  - ./backstage/kustomization.yaml
