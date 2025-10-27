@@ -5,16 +5,11 @@ metadata:
   namespace: flux-system
 spec:
   interval: 10m
-  path: ./manifests/cert-manager
+  path: ./apps/cert-manager
   prune: true
   sourceRef:
     kind: GitRepository
     name: flux-system
   dependsOn:
-    - name: namespaces
+    - name: base
   timeout: 5m
-  healthChecks:
-    - apiVersion: apps/v1
-      kind: Deployment
-      name: cert-manager-webhook
-      namespace: cert-manager
