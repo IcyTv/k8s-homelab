@@ -7,7 +7,6 @@ spec:
   interval: 5m
   dependsOn:
     - name: namespaces
-    - name: secrets
   path: ./manifests/cloudflared 
   prune: true
   sourceRef:
