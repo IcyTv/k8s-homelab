@@ -19,8 +19,6 @@ spec:
     crds: CreateReplace
   releaseName: authentik
   targetNamespace: authentik
-  dependsOn:
-    - name: base
 
   values:
     server:
@@ -60,3 +58,4 @@ spec:
             secretKeyRef:
               name: authentik-postgres
               key: password
+

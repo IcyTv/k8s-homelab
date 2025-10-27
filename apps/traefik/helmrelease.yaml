@@ -18,10 +18,6 @@ spec:
     crds: CreateReplace
   releaseName: traefik
   targetNamespace: traefik
-  dependsOn:
-    - name: base
-    - name: cluster-issuer
-      namespace: flux-system
   values:
     providers:
       kubernetesCRD:
@@ -30,7 +26,7 @@ spec:
       kubernetesIngress:
         enabled: true
         allowCrossNamespace: true
-    
+
     entryPoints:
       web:
         address: ":80"
@@ -42,6 +38,7 @@ spec:
       websecure:
         address: ":443"
         tls: {}
-    
+
     service:
       type: LoadBalancer
+
