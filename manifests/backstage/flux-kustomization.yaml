@@ -4,13 +4,11 @@ metadata:
   name: backstage
   namespace: flux-system
 spec:
-  interval: 5m
-  dependsOn:
-    - name: namespaces
+  interval: 10m
   path: ./manifests/backstage
   prune: true
   sourceRef:
     kind: GitRepository
     name: flux-system
-  targetNamespace: backstage
-  timeout: 3m
+  dependsOn:
+    - name: namespaces
