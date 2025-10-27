@@ -14,3 +14,8 @@ spec:
     name: flux-system
   targetNamespace: cloudflared # Or your target namespace
   timeout: 3m
+  decryption:
+    provider: sops
+    secretRef:
+      name: sops-age
+
