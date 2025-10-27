@@ -21,15 +21,7 @@ spec:
   targetNamespace: authentik
   dependsOn:
     - name: namespaces
-  healthChecks:
-    - apiVersion: apps/v1
-      kind: Deployment
-      name: authentik-server
-      namespace: authentik
-    - apiVersion: apps/v1
-      kind: Deployment
-      name: authentik-worker
-      namespace: authentik
+
   values:
     server:
       ingress:
