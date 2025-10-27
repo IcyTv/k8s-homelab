@@ -5,7 +5,7 @@ resources:
   - ./cert-manager/flux-kustomization.yaml
   - ./cluster-issuer
   - ./authentik
-  - ./traefik
+  - ./traefik/flux-kustomization.yaml
   - ./audiobookshelf
   - ./cloudflared
   - ./backstage
