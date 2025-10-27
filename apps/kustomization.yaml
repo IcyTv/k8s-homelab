@@ -3,9 +3,9 @@ kind: Kustomization
 resources:
   - ./base/flux-kustomization.yaml
   - ./cert-manager/flux-kustomization.yaml
-  - ./cluster-issuer
-  - ./authentik
+  - ./cluster-issuer/flux-kustomization.yaml
+  - ./authentik/flux-kustomization.yaml
   - ./traefik/flux-kustomization.yaml
-  - ./audiobookshelf
-  - ./cloudflared
-  - ./backstage
+  - ./audiobookshelf/flux-kustomization.yaml
+  - ./cloudflared/flux-kustomization.yaml
+  - ./backstage/flux-kustomization.yaml
