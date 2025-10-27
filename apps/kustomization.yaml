@@ -4,7 +4,7 @@ resources:
   - ./base/flux-kustomization.yaml
   - ./cert-manager/flux-kustomization.yaml
   - ./cluster-issuer/flux-kustomization.yaml
-  - ./authentik/flux-kustomization.yaml
+  - ./authentik
   - ./traefik/flux-kustomization.yaml
   - ./audiobookshelf/flux-kustomization.yaml
   - ./cloudflared/flux-kustomization.yaml
