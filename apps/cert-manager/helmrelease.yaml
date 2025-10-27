@@ -19,6 +19,6 @@ spec:
   releaseName: cert-manager
   targetNamespace: cert-manager
   dependsOn:
-    - name: namespaces
+    - name: base
   values:
     installCRDs: true

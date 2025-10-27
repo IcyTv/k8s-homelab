@@ -19,7 +19,7 @@ spec:
   releaseName: traefik
   targetNamespace: traefik
   dependsOn:
-    - name: namespaces
+    - name: base
     - name: cluster-issuer
       namespace: flux-system
   values:

@@ -20,7 +20,7 @@ spec:
   releaseName: authentik
   targetNamespace: authentik
   dependsOn:
-    - name: namespaces
+    - name: base
 
   values:
     server:
