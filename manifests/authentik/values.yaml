@@ -12,8 +12,8 @@ server:
     - name: AUTHENTIK_POSTGRESQL__PASSWORD
       valueFrom:
         secretKeyRef:
-          name: authentik-postgres  # The secret we just made
-          key: password            # The key inside that secret
+          name: authentik-postgres
+          key: password
 postgresql:
   enabled: true
   auth:
@@ -33,5 +33,5 @@ worker:
     - name: AUTHENTIK_POSTGRESQL__PASSWORD
       valueFrom:
         secretKeyRef:
-          name: authentik-postgres  # The secret we just made
-          key: password            # The key inside that secret
+          name: authentrk-postgres
+          key: password

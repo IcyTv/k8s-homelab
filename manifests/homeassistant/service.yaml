@@ -11,4 +11,4 @@ spec:
       port: 80
       targetPort: 8123
       protocol: TCP
-  type: ClusterIP # Keeps it internal. Use "NodePort" or "LoadBalancer" to expose it.
+  type: ClusterIP

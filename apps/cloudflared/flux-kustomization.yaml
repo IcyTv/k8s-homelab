@@ -12,7 +12,7 @@ spec:
   sourceRef:
     kind: GitRepository
     name: flux-system
-  targetNamespace: cloudflared # Or your target namespace
+  targetNamespace: cloudflared
   timeout: 3m
   decryption:
     provider: sops
