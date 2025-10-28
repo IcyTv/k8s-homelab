@@ -9,3 +9,4 @@ resources:
   - ./audiobookshelf/flux-kustomization.yaml
   - ./cloudflared/flux-kustomization.yaml
   - ./backstage/flux-kustomization.yaml
+  - ./homeassistant/flux-kustomization.yaml
