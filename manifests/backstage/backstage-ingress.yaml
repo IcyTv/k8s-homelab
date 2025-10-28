@@ -21,7 +21,7 @@ spec:
               service:
                 name: backstage
                 port:
-                  number: 7007
+                  number: 80
   tls:
     - hosts:
         - backstage.icytv.de
