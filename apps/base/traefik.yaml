@@ -66,6 +66,8 @@ metadata:
   name: traefik
   namespace: flux-system
 spec:
+  dependsOn:
+    - name: base
   interval: 10m0s
   path: ./apps/traefik
   prune: true
