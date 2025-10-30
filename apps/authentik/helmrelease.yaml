@@ -23,6 +23,8 @@ spec:
   targetNamespace: authentik
 
   values:
+    global:
+      external_url: "https://auth.icytv.de"
     server:
       ingress:
         enabled: false
