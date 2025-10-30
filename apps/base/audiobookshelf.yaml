@@ -69,6 +69,11 @@ metadata:
 spec:
   dependsOn:
     - name: base
+  healthChecks:
+    - apiVersion: apps/v1
+      kind: Deployment
+      name: audiobookshelf
+      namespace: audiobookshelf
   interval: 10m
   path: ./apps/audiobookshelf
   prune: true

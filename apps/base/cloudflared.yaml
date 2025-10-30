@@ -94,6 +94,11 @@ metadata:
 spec:
   dependsOn:
     - name: base
+  healthChecks:
+    - apiVersion: apps/v1
+      kind: Deployment
+      name: cloudflared
+      namespace: cloudflared
   interval: 10m
   path: ./apps/cloudflared
   prune: true

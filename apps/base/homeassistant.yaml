@@ -68,6 +68,11 @@ spec:
   path: ./apps/homeassistant
   dependsOn:
     - name: base
+  healthChecks:
+    - apiVersion: apps/v1
+      kind: Deployment
+      name: homeassistant
+      namespace: homeassistant
   prune: true
   sourceRef:
     kind: GitRepository
