@@ -57,6 +57,9 @@ spec:
         port: 53
       - protocol: TCP
         port: 53
+    - to:
+      - namespaceSelector: {}
+        podSelector: {}
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
