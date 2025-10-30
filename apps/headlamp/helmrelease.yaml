@@ -27,14 +27,14 @@ spec:
         cert-manager.io/cluster-issuer: letsencrypt
         traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
       hosts:
-        - host: headlamp.icytv.de
+        - host: cluster.icytv.de
           paths:
             - path: /
-              pathType: InplementationSpecific
+              pathType: ImplementationSpecific
       tls:
         - secretName: headlamp-tls
           hosts:
-            - headlamp.icytv.de
+            - cluster.icytv.de
     config:
       watchPlugins: true
     pluginsManager:
