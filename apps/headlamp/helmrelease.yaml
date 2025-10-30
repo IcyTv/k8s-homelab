@@ -56,7 +56,7 @@ spec:
       - name: PATH
         value: /tmp/npm/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
     persistentVolumeClaim:
-      enabled: true
+      enabled: false
       accessModes:
         - ReadWriteOnce
       size: 1Gi
