@@ -51,6 +51,4 @@ spec:
       enabled: true
       accessModes:
         - ReadWriteOnce
-      resources:
-        requests:
-          storage: 1Gi
+      size: 1Gi
