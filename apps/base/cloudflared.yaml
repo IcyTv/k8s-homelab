@@ -52,6 +52,10 @@ spec:
         port: 80
       - protocol: TCP
         port: 443
+      - protocol: TCP
+        port: 8000
+      - protocol: TCP
+        port: 8443
 
     # 4. Allow cloudflared to find Traefik and Cloudflare via DNS
     - to:
