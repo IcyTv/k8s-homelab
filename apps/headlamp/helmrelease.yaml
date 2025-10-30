@@ -38,6 +38,13 @@ spec:
             - cluster.icytv.de
     config:
       watchPlugins: true
+      oidc:
+        issuerURL: "https://auth.icytv.de/application/o/headlamp/"
+        secret:
+          create: false
+        externalSecret:
+          enabled: true
+          name: oidc-secret
     pluginsManager:
       enabled: true
       configContext: |
@@ -60,3 +67,4 @@ spec:
       accessModes:
         - ReadWriteOnce
       size: 1Gi
+    
