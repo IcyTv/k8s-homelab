@@ -3,6 +3,7 @@ kind: Kustomization
 resources:
   - helmrepos.yaml
   - authentik.yaml
+  - audiobookshelf.yaml
   - cloudflared.yaml
   - cluster-issuer.yaml
   - cert-manager.yaml
