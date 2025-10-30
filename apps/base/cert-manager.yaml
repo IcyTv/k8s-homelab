@@ -69,6 +69,11 @@ metadata:
 spec:
   dependsOn:
     - name: base
+  healthChecks:
+    - apiVersion: helm.toolkit.fluxcd.io/v2
+      kind: HelmRelease
+      name: cert-manager
+      namespace: cert-manager
   interval: 10m
   path: ./apps/cert-manager
   prune: true

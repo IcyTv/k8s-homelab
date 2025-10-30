@@ -69,6 +69,11 @@ metadata:
 spec:
   dependsOn:
     - name: base
+  healthChecks:
+    - apiVersion: helm.toolkit.fluxcd.io/v2
+      kind: HelmRelease
+      name: headlamp
+      namespace: headlamp
   interval: 10m
   path: ./apps/headlamp
   prune: true

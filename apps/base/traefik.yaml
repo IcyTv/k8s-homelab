@@ -68,6 +68,11 @@ metadata:
 spec:
   dependsOn:
     - name: base
+  healthChecks:
+    - apiVersion: helm.toolkit.fluxcd.io/v2
+      kind: HelmRelease
+      name: traefik
+      namespace: traefik
   interval: 10m0s
   path: ./apps/traefik
   prune: true

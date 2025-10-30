@@ -92,6 +92,11 @@ metadata:
 spec:
   dependsOn:
     - name: base
+  healthChecks:
+    - apiVersion: helm.toolkit.fluxcd.io/v2
+      kind: HelmRelease
+      name: authentik
+      namespace: authentik
   interval: 10m
   path: ./apps/authentik
   prune: true
