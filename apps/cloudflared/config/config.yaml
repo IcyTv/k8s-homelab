@@ -6,7 +6,7 @@ originRequest:
   noTLSVerify: true
 ingress:
   - hostname: icytv.de
-    service: https://traefik.traefik.svc.cluster.local:443
+    service: http://traefik.traefik.svc.cluster.local:80
   - hostname: "*.icytv.de"
-    service: https://traefik.traefik.svc.cluster.local:443
+    service: http://traefik.traefik.svc.cluster.local:80
   - service: http_status:444
