@@ -47,6 +47,9 @@ spec:
           maxConcurrent: 2
       baseImage: node:lts-alpine
       version: latest
+      env:
+      - name: HOME
+        value: /tmp
     persistentVolumeClaim:
       enabled: true
       accessModes:
