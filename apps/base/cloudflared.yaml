@@ -83,7 +83,11 @@ spec:
       ports:
       - protocol: TCP
         port: 7844
+      - protocol: UDP
+        port: 7844
       - protocol: TCP
+        port: 443
+      - protocol: UDP
         port: 443
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
