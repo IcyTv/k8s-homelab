@@ -32,7 +32,8 @@ metadata:
 spec:
   podSelector:
     matchLabels:
-      app.kubernetes.io/name: authentik-server
+      app.kubernetes.io/name: authentik
+      app.kubernetes.io/component: server
   policyTypes:
     - Ingress
     - Egress
