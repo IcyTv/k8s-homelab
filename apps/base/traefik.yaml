@@ -44,8 +44,6 @@ spec:
           podSelector:
             matchLabels:
               app.kubernetes.io/name: cloudflared
-    - from:
-        - podSelector: {}
   egress:
     - to:
       - namespaceSelector:
