@@ -26,6 +26,7 @@
 
 set -o errexit
 set -o pipefail
+set -eu
 
 # mirror kustomize-controller build options
 kustomize_flags=("--load-restrictor=LoadRestrictionsNone")

@@ -1,16 +1,15 @@
+---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: audiobookshelf
+  name: cluster-issuer
   namespace: flux-system
 spec:
-  interval: 5m
+  interval: 10m
   dependsOn:
-    - name: base
-  path: ./manifests/audiobookshelf
+    - name: cert-manager
+  path: ./apps/base
   prune: true
   sourceRef:
     kind: GitRepository
     name: flux-system
-  targetNamespace: audiobookshelf
-  timeout: 3m

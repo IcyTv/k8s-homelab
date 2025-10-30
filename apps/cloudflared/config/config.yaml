@@ -9,4 +9,4 @@ ingress:
     service: https://traefik.traefik.svc.cluster.local:443
   - hostname: "*.icytv.de"
     service: https://traefik.traefik.svc.cluster.local:443
-  - service: http_status:404
+  - service: http_status:444
