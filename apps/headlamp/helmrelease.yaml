@@ -30,7 +30,7 @@ spec:
         - host: cluster.icytv.de
           paths:
             - path: /
-              pathType: Prefix
+              type: Prefix
       tls:
         - secretName: headlamp-tls
           hosts:
