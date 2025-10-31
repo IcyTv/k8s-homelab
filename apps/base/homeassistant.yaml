@@ -57,6 +57,14 @@ spec:
         port: 53
       - protocol: TCP
         port: 53
+    - to:
+      - ipBlock:
+          # Allow all internet access...
+          cidr: 0.0.0.0/0
+          except:
+          # ...EXCEPT for internal network ranges.
+          - 10.0.0.0/8
+          - 172.16.0.0/12
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
