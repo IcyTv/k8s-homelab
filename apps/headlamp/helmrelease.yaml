@@ -49,6 +49,8 @@ spec:
       configContext: |
         plugins:
           - name: headlamp-plugin-flux
+            source: ghcr.io/headlamp-k8s/headlamp-plugin-flux
+            version: v0.4.0
         installOptions:
           parallel: true
           maxConcurrent: 2
