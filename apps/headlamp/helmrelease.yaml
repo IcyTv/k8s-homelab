@@ -49,7 +49,7 @@ spec:
       configContent: |
         plugins:
           - name: headlamp-plugin-flux
-            source: ghcr.io/headlamp-k8s/headlamp-plugin-flux
+            source: https://artifacthub.io/packages/headlamp/headlamp-plugins/headlamp_flux
             version: 0.5.0
         installOptions:
           parallel: true
