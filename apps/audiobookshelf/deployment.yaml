@@ -39,7 +39,8 @@ spec:
               mountPath: /metadata
       containers:
         - name: audiobookshelf
-          image: ghcr.io/advplyr/audiobookshelf:latest
+          # Flux Image Automation marker references ImagePolicy flux-system:audiobookshelf
+          image: ghcr.io/advplyr/audiobookshelf:latest # {"$imagepolicy": "flux-system:audiobookshelf"}
           ports:
             - containerPort: 80
               name: http

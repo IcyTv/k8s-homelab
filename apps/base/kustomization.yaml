@@ -10,3 +10,4 @@ resources:
   - headlamp.yaml
   - homeassistant.yaml
   - traefik.yaml
+  - image-update-automation.yaml

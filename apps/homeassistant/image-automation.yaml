@@ -1,0 +1,24 @@
+---
+apiVersion: image.toolkit.fluxcd.io/v1beta2
+kind: ImageRepository
+metadata:
+  name: homeassistant
+  namespace: flux-system
+spec:
+  image: ghcr.io/home-assistant/home-assistant
+  interval: 1h
+---
+apiVersion: image.toolkit.fluxcd.io/v1beta2
+kind: ImagePolicy
+metadata:
+  name: homeassistant
+  namespace: flux-system
+spec:
+  imageRepositoryRef:
+    name: homeassistant
+  filterTags:
+    pattern: '^([0-9]{4}\.[0-9]+\.[0-9]+)$'
+    extract: '$1'
+  policy:
+    semver:
+      range: '>=2024.0.0'
