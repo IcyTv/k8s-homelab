@@ -44,6 +44,10 @@ spec:
           podSelector:
             matchLabels:
               app.kubernetes.io/name: cloudflared
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: audiobookshelf
   egress:
     - to:
       - namespaceSelector:
