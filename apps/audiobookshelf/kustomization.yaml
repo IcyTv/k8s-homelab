@@ -5,4 +5,4 @@ resources:
   - deployment.yaml
   - ingress.yaml
   - service.yaml
-  - image-automation.yaml
+  # - image-automation.yaml

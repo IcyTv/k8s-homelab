@@ -5,5 +5,5 @@ resources:
   - ./deployment.yaml
   - ./service.yaml
   - ./ingress.yaml
-  - ./image-automation.yaml
+  # - ./image-automation.yaml
 
