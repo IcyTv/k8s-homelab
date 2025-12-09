@@ -49,12 +49,8 @@ spec:
     - to:
         - podSelector: {}
     - to:
-        - namespaceSelector:
-            matchLabels:
-              kubernetes.io/metadata.name: traefik
-          podSelector:
-            matchLabels:
-              app.kubernetes.io/name: traefik
+        - ipBlock:
+            cidr: 10.43.170.192/32
     - to:
         - ipBlock:
             cidr: 0.0.0.0/0
