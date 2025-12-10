@@ -24,54 +24,54 @@ subjects:
     name: audiobookshelf-sa
     namespace: flux-system
 ---
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-metadata:
-  name: default-deny-all
-  namespace: audiobookshelf
-spec:
-  podSelector: {}
-  policyTypes:
-    - Ingress
-    - Egress
-
-  ingress:
-    - from:
-        - namespaceSelector:
-            matchLabels:
-              kubernetes.io/metadata.name: traefik
-          podSelector:
-            matchLabels:
-              app.kubernetes.io/name: traefik
-    - from:
-        - podSelector: {}
-  egress:
-    - to:
-        - podSelector: {}
-    - to:
-        - ipBlock:
-            cidr: 10.43.170.192/32
-    - to:
-        - ipBlock:
-            cidr: 0.0.0.0/0
-      ports:
-        - protocol: TCP
-          port: 443
-        - protocol: TCP
-          port: 80
-    - to:
-        - namespaceSelector:
-            matchLabels:
-              kubernetes.io/metadata.name: kube-system
-          podSelector:
-            matchLabels:
-              k8s-app: kube-dns
-      ports:
-        - protocol: UDP
-          port: 53
-        - protocol: TCP
-          port: 53
----
+# apiVersion: networking.k8s.io/v1
+# kind: NetworkPolicy
+# metadata:
+#   name: default-deny-all
+#   namespace: audiobookshelf
+# spec:
+#   podSelector: {}
+#   policyTypes:
+#     - Ingress
+#     - Egress
+#
+#   ingress:
+#     - from:
+#         - namespaceSelector:
+#             matchLabels:
+#               kubernetes.io/metadata.name: traefik
+#           podSelector:
+#             matchLabels:
+#               app.kubernetes.io/name: traefik
+#     - from:
+#         - podSelector: {}
+#   egress:
+#     - to:
+#         - podSelector: {}
+#     - to:
+#         - ipBlock:
+#             cidr: 10.43.170.192/32
+#     - to:
+#         - ipBlock:
+#             cidr: 0.0.0.0/0
+#       ports:
+#         - protocol: TCP
+#           port: 443
+#         - protocol: TCP
+#           port: 80
+#     - to:
+#         - namespaceSelector:
+#             matchLabels:
+#               kubernetes.io/metadata.name: kube-system
+#           podSelector:
+#             matchLabels:
+#               k8s-app: kube-dns
+#       ports:
+#         - protocol: UDP
+#           port: 53
+#         - protocol: TCP
+#           port: 53
+# ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
