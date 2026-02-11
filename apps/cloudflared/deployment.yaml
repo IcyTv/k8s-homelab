@@ -20,6 +20,27 @@ spec:
         app.kubernetes.io/name: cloudflared
         app.kubernetes.io/component: tunnel
     spec:
+      dnsPolicy: "None"
+      dnsConfig:
+        nameservers:
+          - 1.1.1.1
+          - 1.0.0.1
+          - 8.8.8.8
+          # CoreDNS
+          - 10.43.0.10
+        searches:
+          - cloudflared.svc.cluster.local
+          - svc.cluster.local
+          - cluster.local
+        options:
+          - name: ndots
+            value: "5"
+          - name: timeout
+            value: "2"
+          - name: attempts
+            value: "3"
+
+
       containers:
         - name: cloudflared
           # Flux Image Automation marker references ImagePolicy flux-system:cloudflared
