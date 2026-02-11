@@ -56,21 +56,21 @@ spec:
               containerPort: 2000
               protocol: TCP
           livenessProbe:
-            httpGet:
-              path: /metrics
+            tcpSocket:
               port: metrics
-            initialDelaySeconds: 10
+            initialDelaySeconds: 30
             periodSeconds: 30
             timeoutSeconds: 5
             failureThreshold: 3
           readinessProbe:
             httpGet:
-              path: /metrics
+              path: /ready
               port: metrics
-            initialDelaySeconds: 5
-            periodSeconds: 10
-            timeoutSeconds: 5
-            failureThreshold: 3
+            initialDelaySeconds: 20
+            periodSeconds: 15
+            timeoutSeconds: 10
+            failureThreshold: 5
+            successThreshold: 1
           resources:
             requests:
               cpu: 50m
