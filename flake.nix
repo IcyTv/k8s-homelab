@@ -15,19 +15,17 @@
       pkgs = import nixpkgs {inherit system;};
     in {
       devShells.default = pkgs.mkShell {
-        # Tools installed in the shell
         buildInputs = with pkgs; [
           kubectl
           fluxcd
-          kubernetes-helm # Often needed alongside Flux
+          kubernetes-helm
+          sops
+          age
         ];
 
-        # Shell hook to handle cluster connection/env vars
         shellHook = ''
           echo "❄️ Welcome to the Kubernetes dev shell"
 
-          # Point to a local kubeconfig if it exists in this directory
-          # or use the default ~/.kube/config
           if [ -f "./kubeconfig.yaml" ]; then
             export KUBECONFIG="$PWD/kubeconfig.yaml"
             echo "📍 Using local project kubeconfig"
