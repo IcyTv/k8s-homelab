@@ -25,19 +25,6 @@ spec:
     extraArgs:
       - --dns01-recursive-nameservers-only
       - --dns01-recursive-nameservers=1.1.1.1:53,8.8.8.8:53
-    networkPolicy:
-      enabled: true
-      egress:
-        - to:
-            - ipBlock:
-                cidr: 0.0.0.0/0
-          ports:
-            - protocol: UDP
-              port: 53
-            - protocol: TCP
-              port: 53
-            - protocol: TCP
-              port: 443
     webhook:
       networkPolicy:
         enabled: true
@@ -55,6 +42,8 @@ spec:
                   component: "kube-apiserver"
         egress:
           - to:
+            - ipBlock:
+                cidr: 0.0.0.0/0
             # Allow DNS
             - namespaceSelector:
                 matchLabels:
