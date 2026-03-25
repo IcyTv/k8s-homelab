@@ -21,6 +21,7 @@ spec:
       securityContext:
         runAsUser: 1000
         runAsGroup: 1000
+        supplementalGroups: [20]
       containers:
         - name: homeassistant
           # Flux Image Automation marker references ImagePolicy flux-system:homeassistant
@@ -33,10 +34,15 @@ spec:
           env:
             - name: TZ
               value: "Europe/Berlin"
-          
+
+          securityContext:
+            privileged: true
+
           volumeMounts:
             - name: config
               mountPath: /config
+            - name: zigbee-usb
+              mountPath: /dev/zigbee
           
           readinessProbe:
             httpGet:
@@ -55,3 +61,7 @@ spec:
         - name: config
           persistentVolumeClaim:
             claimName: homeassistant-config
+        - name: zigbee-usb
+          hostPath:
+            path: /dev/serial/by-id/usb-1a86_USB_Serial-if00-port0
+            type: CharDevice
