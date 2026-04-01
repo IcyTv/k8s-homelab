@@ -11,18 +11,17 @@ metadata:
   namespace: flux-system
 ---
 apiVersion: rbac.authorization.k8s.io/v1
-kind: RoleBinding
+kind: ClusterRoleBinding
 metadata:
-  name: traefik-sa-admin
-  namespace: traefik
+  name: traefik-cluster-admin
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: admin
+  name: cluster-admin
 subjects:
   - kind: ServiceAccount
-    name: traefik-sa
-    namespace: flux-system
+    name: traefik
+    namespace: traefik
 # ---
 # apiVersion: networking.k8s.io/v1
 # kind: NetworkPolicy
