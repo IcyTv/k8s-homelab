@@ -51,6 +51,11 @@ spec:
             - /etc/cloudflared/config.yaml
             - --no-autoupdate
             - run
+          env:
+            - name: TUNNEL_TRANSPORT_PROTOCOL
+              value: "http2"
+            - name: TUNNEL_EDGE_IP_VERSION
+              value: "4"
           ports:
             - name: metrics
               containerPort: 2000
