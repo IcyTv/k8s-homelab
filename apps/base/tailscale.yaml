@@ -1,0 +1,52 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: tailscale
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: tailscale-sa
+  namespace: flux-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: tailscale-sa-admin
+  namespace: tailscale
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: admin
+subjects:
+  - kind: ServiceAccount
+    name: tailscale-sa
+    namespace: flux-system
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: app-tailscale
+  namespace: flux-system
+spec:
+  dependsOn:
+    - name: base
+  healthChecks:
+    - apiVersion: apps/v1
+      kind: Deployment
+      name: tailscale-subnet-router
+      namespace: tailscale
+  interval: 10m
+  path: ./apps/tailscale
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  targetNamespace: tailscale
+  serviceAccountName: tailscale-sa
+  timeout: 5m
+  decryption:
+    provider: sops
+    secretRef:
+      name: sops-age
