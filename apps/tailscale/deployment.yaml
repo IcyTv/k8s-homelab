@@ -20,7 +20,7 @@ spec:
       serviceAccountName: tailscale-subnet-router
       containers:
         - name: tailscale
-          image: tailscale/tailscale:v1.88.3
+          image: tailscale/tailscale:v1.94.2
           imagePullPolicy: IfNotPresent
           securityContext:
             privileged: true
@@ -45,7 +45,7 @@ spec:
             - name: TS_ROUTES
               value: "192.168.1.0/24,10.42.0.0/16,10.43.0.0/16"
             - name: TS_EXTRA_ARGS
-              value: "--advertise-exit-node=false --accept-routes=false"
+              value: "--advertise-exit-node=true --accept-routes=false"
             - name: TS_HOSTNAME
               value: k8s-subnet-router
             - name: POD_NAME
