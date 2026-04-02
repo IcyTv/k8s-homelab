@@ -45,7 +45,7 @@ spec:
             - name: TS_ROUTES
               value: "192.168.1.0/24,10.42.0.0/16,10.43.0.0/16"
             - name: TS_EXTRA_ARGS
-              value: "--advertise-exit-node=false --accept-routes=false"
+              value: "--advertise-exit-node=false --accept-routes=false --tun=userspace-networking"
             - name: TS_HOSTNAME
               value: k8s-subnet-router
             - name: POD_NAME
