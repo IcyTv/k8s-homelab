@@ -22,9 +22,11 @@ spec:
           image: tailscale/tailscale:v1.88.3
           imagePullPolicy: IfNotPresent
           securityContext:
+            privileged: true
             capabilities:
               add:
                 - NET_ADMIN
+                - NET_RAW
               drop:
                 - ALL
           env:
@@ -48,6 +50,8 @@ spec:
           volumeMounts:
             - name: tailscale-state
               mountPath: /var/lib/tailscale
+            - name: dev-net-tun
+              mountPath: /dev/net/tun
           resources:
             requests:
               cpu: 25m
@@ -59,6 +63,10 @@ spec:
         - name: tailscale-state
           persistentVolumeClaim:
             claimName: tailscale-state
+        - name: dev-net-tun
+          hostPath:
+            path: /dev/net/tun
+            type: CharDevice
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
