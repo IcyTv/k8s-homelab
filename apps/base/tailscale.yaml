@@ -24,6 +24,52 @@ subjects:
     name: tailscale-sa
     namespace: flux-system
 ---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: tailscale-subnet-router
+  namespace: tailscale
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: tailscale-subnet-router
+  namespace: tailscale
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - secrets
+    resourceNames:
+      - tailscale
+    verbs:
+      - get
+      - create
+      - update
+      - patch
+  - apiGroups:
+      - ""
+    resources:
+      - events
+    verbs:
+      - get
+      - create
+      - patch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: tailscale-subnet-router
+  namespace: tailscale
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: tailscale-subnet-router
+subjects:
+  - kind: ServiceAccount
+    name: tailscale-subnet-router
+    namespace: tailscale
+---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
