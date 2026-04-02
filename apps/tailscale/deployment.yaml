@@ -1,3 +1,49 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: tailscale-subnet-router
+  namespace: tailscale
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: tailscale-subnet-router
+  namespace: tailscale
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - secrets
+    resourceNames:
+      - tailscale
+    verbs:
+      - get
+      - create
+      - update
+      - patch
+  - apiGroups:
+      - ""
+    resources:
+      - events
+    verbs:
+      - get
+      - create
+      - patch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: tailscale-subnet-router
+  namespace: tailscale
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: tailscale-subnet-router
+subjects:
+  - kind: ServiceAccount
+    name: tailscale-subnet-router
+    namespace: tailscale
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -17,6 +63,7 @@ spec:
     spec:
       hostNetwork: true
       dnsPolicy: ClusterFirstWithHostNet
+      serviceAccountName: tailscale-subnet-router
       containers:
         - name: tailscale
           image: tailscale/tailscale:v1.88.3
@@ -47,6 +94,16 @@ spec:
               value: "--advertise-exit-node=false --accept-routes=false"
             - name: TS_HOSTNAME
               value: k8s-subnet-router
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: metadata.name
+            - name: POD_UID
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: metadata.uid
           volumeMounts:
             - name: tailscale-state
               mountPath: /var/lib/tailscale
