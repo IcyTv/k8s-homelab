@@ -23,6 +23,39 @@ subjects:
   - kind: ServiceAccount
     name: traefik-sa
     namespace: flux-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: traefik-sa-traefik-crd
+  namespace: traefik
+rules:
+  - apiGroups:
+      - traefik.io
+    resources:
+      - middlewares
+    verbs:
+      - get
+      - list
+      - watch
+      - create
+      - update
+      - patch
+      - delete
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: traefik-sa-traefik-crd
+  namespace: traefik
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: traefik-sa-traefik-crd
+subjects:
+  - kind: ServiceAccount
+    name: traefik-sa
+    namespace: flux-system
 # ---
 # apiVersion: networking.k8s.io/v1
 # kind: NetworkPolicy

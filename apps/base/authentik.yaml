@@ -24,6 +24,39 @@ subjects:
     name: authentik-sa
     namespace: flux-system
 ---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: authentik-sa-traefik-crd
+  namespace: authentik
+rules:
+  - apiGroups:
+      - traefik.io
+    resources:
+      - middlewares
+    verbs:
+      - get
+      - list
+      - watch
+      - create
+      - update
+      - patch
+      - delete
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: authentik-sa-traefik-crd
+  namespace: authentik
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: authentik-sa-traefik-crd
+subjects:
+  - kind: ServiceAccount
+    name: authentik-sa
+    namespace: flux-system
+---
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
