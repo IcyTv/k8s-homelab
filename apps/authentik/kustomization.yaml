@@ -4,6 +4,5 @@ namespace: authentik
 resources:
   - helmrelease.yaml
   - ingress.yaml
-  - middleware-forwarded-https.yaml
   - secret-key.yaml
   - authentik-postgres.yaml

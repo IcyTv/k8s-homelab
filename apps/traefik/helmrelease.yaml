@@ -38,8 +38,10 @@ spec:
               scheme: https
       websecure:
         address: ":443"
+        http:
+          middlewares:
+            - traefik-forwarded-https@kubernetescrd
         tls: {}
 
     service:
       type: LoadBalancer
-

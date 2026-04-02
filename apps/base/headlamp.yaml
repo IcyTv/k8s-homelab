@@ -23,6 +23,7 @@ subjects:
   - kind: ServiceAccount
     name: headlamp-sa
     namespace: flux-system
+---
 # ---
 # apiVersion: networking.k8s.io/v1
 # kind: NetworkPolicy
