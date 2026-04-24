@@ -29,11 +29,7 @@ spec:
 
     ports:
       web:
-        http:
-          redirections:
-            entryPoint:
-              to: websecure
-              scheme: https
+        http: {}
       websecure:
         http:
           middlewares:
