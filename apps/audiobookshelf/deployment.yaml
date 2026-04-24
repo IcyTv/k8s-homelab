@@ -44,7 +44,7 @@ spec:
       containers:
         - name: audiobookshelf
           # Flux Image Automation marker references ImagePolicy flux-system:audiobookshelf
-          image: ghcr.io/advplyr/audiobookshelf:latest # {"$imagepolicy": "flux-system:audiobookshelf"}
+          image: ghcr.io/advplyr/audiobookshelf:2.33.2 # {"$imagepolicy": "flux-system:audiobookshelf"}
           ports:
             - containerPort: 80
               name: http
