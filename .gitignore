@@ -1,3 +1,5 @@
 manifests/*/charts
 kubeconfig.yaml
 .direnv/
+
+/.terraform

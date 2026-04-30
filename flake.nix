@@ -4,16 +4,45 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     utils.url = "github:numtide/flake-utils";
+    kubenix = {
+      url = "github:hall/kubenix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    terranix = {
+      url = "github:terranix/terranix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = {
     self,
     nixpkgs,
     utils,
+    kubenix,
+    terranix,
   }:
     utils.lib.eachDefaultSystem (system: let
       pkgs = import nixpkgs {inherit system;};
     in {
+      # imports = [terranix.flakeModules.default];
+
+      packages.default = kubenix.packages.${system}.default.override {
+        module = import ./cluster;
+        specialArgs = {
+          flake = self;
+          inherit system pkgs;
+        };
+      };
+
+      # terranix.terranixConfigurations.homelab = {
+      #   modules = [./terra/default.nix];
+      # };
+
+      packages.terra = terranix.lib.terranixConfiguration {
+        inherit system;
+        modules = [./terra/default.nix];
+      };
+
       devShells.default = pkgs.mkShell {
         buildInputs = with pkgs; [
           kubectl
@@ -25,6 +54,7 @@
           kubeconform
           kustomize
           cmctl
+          opentofu
         ];
 
         shellHook = ''
