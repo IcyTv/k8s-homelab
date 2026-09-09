@@ -45,14 +45,32 @@
     {
       "description": "Automatically merge patch releases after CI passes",
       "matchDatasources": ["docker", "github-releases", "github-tags", "helm"],
+      "matchPackageNames": ["!authentik"],
       "matchUpdateTypes": ["patch"],
       "minimumReleaseAge": "3 days",
+      "addLabels": ["automerge"],
       "automerge": true,
       "automergeType": "pr"
     },
     {
+      "description": "Updates that require review",
+      "matchUpdateTypes": ["lockFileMaintenance", "major", "minor"],
+      "addLabels": ["review-required"]
+    },
+    {
+      "description": "Kubernetes API migrations require review",
+      "matchDatasources": ["kubernetes-api"],
+      "addLabels": ["review-required"]
+    },
+    {
+      "description": "Highlight major updates",
+      "matchUpdateTypes": ["major"],
+      "addLabels": ["major-update"]
+    },
+    {
       "description": "Authentik upgrades can require ordered migrations",
       "matchPackageNames": ["authentik"],
+      "addLabels": ["review-required"],
       "automerge": false
     }
   ]

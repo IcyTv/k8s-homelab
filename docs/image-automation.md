@@ -14,6 +14,8 @@ pull requests, and Flux applies changes after they reach `main`.
 - Nix lock-file maintenance runs weekly.
 - Image digests are not pinned, keeping the manifests readable and avoiding
   duplicate tag and digest update pull requests.
+- Pull requests use `automerge`, `review-required`, and `major-update` labels to
+  make their handling clear at a glance.
 
 The policy and dependency discovery rules live in `renovate.json5`. The
 validation workflow is `.github/workflows/validate.yaml` and runs
