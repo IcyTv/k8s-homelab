@@ -5,7 +5,6 @@ resources:
   - authentik.yaml
   - audiobookshelf.yaml
   - cloudflared.yaml
-  - cluster-issuer.yaml
   - cert-manager.yaml
   - headlamp.yaml
   - homeassistant.yaml

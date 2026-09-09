@@ -25,18 +25,13 @@ spec:
       enabled: true
       ingressClassName: traefik
       annotations:
-        cert-manager.io/cluster-issuer: letsencrypt
-        traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
+        traefik.ingress.kubernetes.io/router.entrypoints: web
         traefik.ingress.kubernetes.io/router.middlewares: traefik-forwarded-https@kubernetescrd
       hosts:
         - host: cluster.icytv.de
           paths:
             - path: /
               type: Prefix
-      tls:
-        - secretName: headlamp-tls
-          hosts:
-            - cluster.icytv.de
     config:
       watchPlugins: true
       oidc:
