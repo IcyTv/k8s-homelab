@@ -1,84 +1,52 @@
-# Flux Image Automation
+# Dependency Automation
 
-This repository uses Flux Image Automation to keep selected application images up-to-date automatically by committing tag changes to the Git repo.
+This repository uses Renovate to update Kubernetes container images, Flux
+`HelmRelease` chart versions, Flux itself, and Nix flake inputs. Renovate opens
+pull requests, and Flux applies changes after they reach `main`.
 
-## Components Added
+## Update Policy
 
-- `ImageRepository`: Watches a container registry for tags.
-- `ImagePolicy`: Selects the latest acceptable tag based on filters.
-- `ImageUpdateAutomation`: Scans manifests under `./apps` and updates image fields annotated with policy markers.
+- Patch releases are merged automatically after they are at least three days
+  old and the manifest validation workflow passes.
+- Minor and major releases remain open for review.
+- Authentik upgrades always remain open for review because releases can require
+  ordered database migrations.
+- Nix lock-file maintenance runs weekly.
+- Image digests are not pinned, keeping the manifests readable and avoiding
+  duplicate tag and digest update pull requests.
 
-## Current Automated Images
+The policy and dependency discovery rules live in `renovate.json5`. The
+validation workflow is `.github/workflows/validate.yaml` and runs
+`scripts/validate.sh` inside the repository's Nix development shell.
 
-| App            | Image                                  | Policy Type | Tag Pattern                          |
-|----------------|----------------------------------------|-------------|--------------------------------------|
-| audiobookshelf | `ghcr.io/advplyr/audiobookshelf`       | Semver      | `^([0-9]+\.[0-9]+\.[0-9]+)$`        |
-| cloudflared    | `cloudflare/cloudflared`               | Alphabetical (desc) | `^([0-9]{4}\.[0-9]+\.[0-9]+)$` |
-| homeassistant  | `ghcr.io/home-assistant/home-assistant`| Semver      | `^([0-9]{4}\.[0-9]+\.[0-9]+)$`      |
+## Coverage
 
-## How It Works
+Renovate scans YAML under `apps/` with both its Kubernetes and Flux managers.
+This covers ordinary workload images and charts referenced by `HelmRelease`
+resources. Its Flux manager also recognizes
+`clusters/main/flux-system/gotk-components.yaml`, and its Nix manager updates
+`flake.lock`.
 
-1. Flux polls the registries (`interval: 1h`).
-2. Policies resolve the latest tag that matches filters.
-3. Automation checks every hour, updates annotated image lines, and commits with message template.
-4. Flux Git reconciliation applies the new manifests.
+The Headlamp Flux plugin version is discovered with a custom rule because it is
+embedded in plugin-manager configuration rather than a standard Kubernetes
+image or Helm chart field.
 
-## Annotating Additional Images
+Floating image tags such as `stable` and `latest` cannot produce semantic
+version upgrades. Keep those tags only when following the upstream channel is
+intentional; use a concrete version when Renovate should propose version bumps.
 
-For each deployment or HelmRelease you want automated:
+## Setup
 
-1. Create (or reuse) an `image-automation.yaml` inside the app directory (e.g. `apps/<app>/image-automation.yaml`):
-   ```yaml
-   apiVersion: image.toolkit.fluxcd.io/v1beta2
-   kind: ImageRepository
-   metadata:
-     name: myapp
-     namespace: flux-system
-   spec:
-     image: ghcr.io/org/myapp
-     interval: 1h
-   ```
-2. Add an `ImagePolicy` selecting tags (semver or alphabetical):
-   ```yaml
-   apiVersion: image.toolkit.fluxcd.io/v1beta2
-   kind: ImagePolicy
-   metadata:
-     name: myapp
-     namespace: flux-system
-   spec:
-     imageRepositoryRef:
-       name: myapp
-     filterTags:
-       pattern: '^([0-9]+\.[0-9]+\.[0-9]+)$'
-       extract: '$1'
-     policy:
-       semver:
-         range: '>=0.0.0'
-   ```
-3. Annotate the image line in the manifest you want updated:
-   ```yaml
-   image: ghcr.io/org/myapp:1.2.3 # {"$imagepolicy": "flux-system:myapp"}
-   ```
-4. Reference the new file from the app's `kustomization.yaml` so Flux applies it alongside the workloads.
-5. Ensure the path containing the manifest is under `./apps` (already covered by automation `path: ./apps`).
-6. Commit the changes. Flux will handle future updates.
+Install the hosted Renovate GitHub App for `IcyTv/k8s-homelab`:
 
-## Notes
+<https://github.com/apps/renovate>
 
-- Avoid using floating tags like `latest` or `stable`; automation requires a concrete tag to start from that matches the policy pattern.
-- For Helm charts: You can annotate container images inside rendered YAML (if you vendor them) or manage chart version bumps separately. Image automation does not alter chart version fields.
-- If a tag format changes upstream, update `filterTags.pattern` accordingly.
-- Use `semver` policy when upstream publishes proper semantic versions; otherwise fall back to `alphabetical`.
+The committed configuration skips Renovate's onboarding-only mode, so it can
+create dependency pull requests after the app has access to the repository.
 
-## Troubleshooting
+## Legacy Flux Resources
 
-- Policy shows no tag: Confirm the pattern matches available tags; temporarily remove `filterTags` to list all.
-- Automation not committing: Check Flux logs for `image-update-automation` controller and ensure the Git write key (`flux-system` secret) has push access.
-- Wrong tag selected: Adjust the policy type (`semver` vs `alphabetical`) or tighten the regex.
-
-## Extending
-
-- For Helm-based apps (e.g. authentik, traefik) consider whether you want to override the chart-provided image tags; chart upgrades may already roll these images forward. If you decide to automate them, add the relevant `values.image.repository/tag` fields and annotate those entries the same way as Deployments.
-
----
-Created by Flux automation setup.
+The unreferenced `image-automation.yaml` files are retained as historical
+configuration only. The cluster was bootstrapped without Flux's optional image
+reflector and image automation controllers, and no app kustomization includes
+those resources. Do not enable both systems for the same image.

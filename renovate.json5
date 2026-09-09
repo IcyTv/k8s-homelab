@@ -1,0 +1,54 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    ":dependencyDashboard",
+    ":semanticCommits",
+    ":semanticCommitType(chore)"
+  ],
+  "labels": ["dependencies"],
+  "platformAutomerge": false,
+  "pinDigests": false,
+  "separateMinorPatch": true,
+  "flux": {
+    "managerFilePatterns": ["/^apps\\/.+\\.yaml$/"]
+  },
+  "kubernetes": {
+    "managerFilePatterns": ["/^apps\\/.+\\.yaml$/"]
+  },
+  "nix": {
+    "enabled": true
+  },
+  "lockFileMaintenance": {
+    "enabled": true,
+    "schedule": ["before 6am on monday"]
+  },
+  "customManagers": [
+    {
+      "customType": "regex",
+      "managerFilePatterns": ["/^apps\\/headlamp\\/helmrelease\\.yaml$/"],
+      "matchStrings": [
+        "source: https://artifacthub\\.io/packages/headlamp/headlamp-plugins/headlamp_flux\\s+version: (?<currentValue>\\S+)"
+      ],
+      "datasourceTemplate": "github-releases",
+      "packageNameTemplate": "headlamp-k8s/plugins",
+      "depNameTemplate": "Headlamp Flux plugin",
+      "extractVersionTemplate": "^flux-(?<version>.+)$",
+      "versioningTemplate": "semver"
+    }
+  ],
+  "packageRules": [
+    {
+      "description": "Automatically merge patch releases after CI passes",
+      "matchUpdateTypes": ["patch"],
+      "minimumReleaseAge": "3 days",
+      "automerge": true,
+      "automergeType": "pr"
+    },
+    {
+      "description": "Authentik upgrades can require ordered migrations",
+      "matchPackageNames": ["authentik"],
+      "automerge": false
+    }
+  ]
+}
