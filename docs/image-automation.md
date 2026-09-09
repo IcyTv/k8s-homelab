@@ -41,6 +41,9 @@ Install the hosted Renovate GitHub App for `IcyTv/k8s-homelab`:
 
 <https://github.com/apps/renovate>
 
+In the Mend portal, set **Dependency Updates (Renovate)** to **Active**. Silent
+mode discovers updates but does not create branches, pull requests, or issues.
+
 The committed configuration skips Renovate's onboarding-only mode, so it can
 create dependency pull requests after the app has access to the repository.
 
@@ -49,4 +52,5 @@ create dependency pull requests after the app has access to the repository.
 The unreferenced `image-automation.yaml` files are retained as historical
 configuration only. The cluster was bootstrapped without Flux's optional image
 reflector and image automation controllers, and no app kustomization includes
-those resources. Do not enable both systems for the same image.
+those resources. Renovate ignores these files; do not enable both systems for
+the same image.

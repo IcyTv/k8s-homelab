@@ -7,6 +7,10 @@
     ":semanticCommitType(chore)"
   ],
   "labels": ["dependencies"],
+  "ignorePaths": [
+    "apps/base/image-update-automation.yaml",
+    "apps/*/image-automation.yaml"
+  ],
   "platformAutomerge": false,
   "pinDigests": false,
   "separateMinorPatch": true,
@@ -40,6 +44,7 @@
   "packageRules": [
     {
       "description": "Automatically merge patch releases after CI passes",
+      "matchDatasources": ["docker", "github-releases", "github-tags", "helm"],
       "matchUpdateTypes": ["patch"],
       "minimumReleaseAge": "3 days",
       "automerge": true,
