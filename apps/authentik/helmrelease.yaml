@@ -24,8 +24,9 @@ spec:
   targetNamespace: authentik
 
   values:
-    global:
-      external_url: "https://auth.icytv.de"
+    authentik:
+      web:
+        base_url: "https://auth.icytv.de"
     server:
       ingress:
         enabled: false
@@ -48,9 +49,6 @@ spec:
         existingSecret: authentik-postgres
         secretKeys:
           passwordKey: password
-    redis:
-      enabled: true
-
     worker:
       env:
         - name: AUTHENTIK_SECRET_KEY
