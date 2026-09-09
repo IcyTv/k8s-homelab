@@ -24,7 +24,6 @@
           yq
           kubeconform
           kustomize
-          cmctl
         ];
 
         shellHook = ''
