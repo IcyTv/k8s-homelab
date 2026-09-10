@@ -87,7 +87,7 @@ spec:
       namespace: audiobookshelf
   interval: 10m
   path: ./apps/audiobookshelf
-  prune: true
+  prune: false
   sourceRef:
     kind: GitRepository
     name: flux-system

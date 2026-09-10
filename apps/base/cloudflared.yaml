@@ -103,7 +103,7 @@ spec:
       namespace: cloudflared
   interval: 10m
   path: ./apps/cloudflared
-  prune: true
+  prune: false
   sourceRef:
     kind: GitRepository
     name: flux-system

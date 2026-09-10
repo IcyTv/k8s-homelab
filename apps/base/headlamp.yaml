@@ -170,7 +170,7 @@ spec:
       namespace: headlamp
   interval: 10m
   path: ./apps/headlamp
-  prune: true
+  prune: false
   sourceRef:
     kind: GitRepository
     name: flux-system

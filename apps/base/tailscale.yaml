@@ -90,7 +90,7 @@ spec:
       namespace: tailscale
   interval: 10m
   path: ./apps/tailscale
-  prune: true
+  prune: false
   sourceRef:
     kind: GitRepository
     name: flux-system
