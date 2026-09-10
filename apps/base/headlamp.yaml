@@ -158,7 +158,7 @@ subjects:
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: app-headlamp
+  name: headlamp
   namespace: flux-system
 spec:
   dependsOn:
@@ -170,7 +170,7 @@ spec:
       namespace: headlamp
   interval: 10m
   path: ./apps/headlamp
-  prune: false
+  prune: true
   sourceRef:
     kind: GitRepository
     name: flux-system

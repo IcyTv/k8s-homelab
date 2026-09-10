@@ -78,7 +78,7 @@ subjects:
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: app-tailscale
+  name: tailscale
   namespace: flux-system
 spec:
   dependsOn:
@@ -90,7 +90,7 @@ spec:
       namespace: tailscale
   interval: 10m
   path: ./apps/tailscale
-  prune: false
+  prune: true
   sourceRef:
     kind: GitRepository
     name: flux-system
