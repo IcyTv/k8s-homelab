@@ -23,7 +23,7 @@ spec:
       containers:
         - name: cloudflared
           # Flux Image Automation marker references ImagePolicy flux-system:cloudflared
-          image: cloudflare/cloudflared:2026.8.3 # {"$imagepolicy": "flux-system:cloudflared"}
+          image: cloudflare/cloudflared:2026.9.0 # {"$imagepolicy": "flux-system:cloudflared"}
           imagePullPolicy: IfNotPresent
           args:
             - tunnel
