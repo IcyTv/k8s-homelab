@@ -4,11 +4,15 @@ metadata:
   name: audiobookshelf
   namespace: audiobookshelf
   annotations:
-    traefik.ingress.kubernetes.io/router.entrypoints: web
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
     traefik.ingress.kubernetes.io/service.serversscheme: http
-    traefik.ingress.kubernetes.io/router.middlewares: traefik-forwarded-https@kubernetescrd
 spec:
   ingressClassName: traefik
+  tls:
+    - hosts:
+        - audiobook.icytv.de
+      secretName: audiobookshelf-tls
   rules:
     - host: audiobook.icytv.de
       http:

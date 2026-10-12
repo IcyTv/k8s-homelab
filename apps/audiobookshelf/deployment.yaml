@@ -20,27 +20,6 @@ spec:
         - ip: "10.43.170.192"
           hostnames:
             - "auth.icytv.de"
-      initContainers:
-        - name: permission-fix
-          image: busybox:1.38
-          command:
-            - sh
-            - -c
-            - |
-              chown -R 99:100 /config /metadata /audiobooks /podcasts && \
-              chmod -R g+rwX /config /metadata /audiobooks /podcasts
-          securityContext:
-            runAsUser: 0
-            runAsGroup: 0
-          volumeMounts:
-            - name: config
-              mountPath: /config
-            - name: audiobooks
-              mountPath: /audiobooks
-            - name: podcasts
-              mountPath: /podcasts
-            - name: metadata
-              mountPath: /metadata
       containers:
         - name: audiobookshelf
           # Flux Image Automation marker references ImagePolicy flux-system:audiobookshelf
@@ -66,23 +45,129 @@ spec:
               mountPath: /metadata
       volumes:
         - name: config
-          hostPath:
-            path: /home/michael/media/config
-            type: Directory
+          persistentVolumeClaim:
+            claimName: audiobookshelf-config
         - name: audiobooks
-          hostPath:
-            path: /home/michael/media/audiobooks
-            type: Directory
+          persistentVolumeClaim:
+            claimName: audiobookshelf-media
         - name: podcasts
-          hostPath:
-            path: /home/michael/media/podcasts
-            type: Directory
+          persistentVolumeClaim:
+            claimName: audiobookshelf-podcasts
         - name: metadata
-          hostPath:
-            path: /home/michael/media/metadata
-            type: Directory
+          persistentVolumeClaim:
+            claimName: audiobookshelf-metadata
       securityContext:
         runAsUser: 99
         runAsGroup: 100
         fsGroup: 100
         fsGroupChangePolicy: Always
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: audiobookshelf-media
+spec:
+  capacity:
+    storage: 1Ti
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: ""
+  mountOptions:
+    - vers=3.0
+    - seal
+    - uid=1000
+    - gid=1000
+    - file_mode=0660
+    - dir_mode=0770
+    - noserverino
+  csi:
+    driver: smb.csi.k8s.io
+    volumeHandle: "storagebox#audiobooks#backup"
+    volumeAttributes:
+      source: "//u689340.your-storagebox.de/backup"
+      subDir: "audiobooks"
+    nodeStageSecretRef:
+      name: storagebox-smb
+      namespace: audiobookshelf
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: audiobookshelf-media
+  namespace: audiobookshelf
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: ""
+  volumeName: audiobookshelf-media
+  resources:
+    requests:
+      storage: 1Ti
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: audiobookshelf-config
+  namespace: audiobookshelf
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: audiobookshelf-metadata
+  namespace: audiobookshelf
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: audiobookshelf-podcasts
+spec:
+  capacity:
+    storage: 1Ti
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: ""
+  mountOptions:
+    - vers=3.0
+    - seal
+    - uid=1000
+    - gid=1000
+    - file_mode=0660
+    - dir_mode=0770
+    - noserverino
+  csi:
+    driver: smb.csi.k8s.io
+    volumeHandle: "storagebox#podcasts#backup"
+    volumeAttributes:
+      source: "//u689340.your-storagebox.de/backup"
+      subDir: "podcasts"
+    nodeStageSecretRef:
+      name: storagebox-smb
+      namespace: audiobookshelf
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: audiobookshelf-podcasts
+  namespace: audiobookshelf
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: ""
+  volumeName: audiobookshelf-podcasts
+  resources:
+    requests:
+      storage: 1Ti

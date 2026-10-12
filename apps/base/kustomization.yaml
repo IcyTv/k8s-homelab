@@ -4,8 +4,6 @@ resources:
   - helmrepos.yaml
   - authentik.yaml
   - audiobookshelf.yaml
-  - cloudflared.yaml
+  - cert-manager.yaml
   - headlamp.yaml
-  - homeassistant.yaml
   - traefik.yaml
-  - tailscale.yaml
