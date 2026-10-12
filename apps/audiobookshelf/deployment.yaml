@@ -59,5 +59,7 @@ spec:
       securityContext:
         runAsUser: 99
         runAsGroup: 100
+        supplementalGroups:
+          - 1000
         fsGroup: 100
         fsGroupChangePolicy: Always
