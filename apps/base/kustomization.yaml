@@ -6,4 +6,5 @@ resources:
   - audiobookshelf.yaml
   - cert-manager.yaml
   - headlamp.yaml
+  - smb.yaml
   - traefik.yaml

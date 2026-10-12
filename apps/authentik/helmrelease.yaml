@@ -28,6 +28,7 @@ spec:
       web:
         base_url: "https://auth.icytv.de"
     server:
+      replicas: 0
       ingress:
         enabled: false
         hosts:
@@ -50,6 +51,7 @@ spec:
         secretKeys:
           passwordKey: password
     worker:
+      replicas: 0
       env:
         - name: AUTHENTIK_SECRET_KEY
           valueFrom:

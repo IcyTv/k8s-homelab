@@ -75,11 +75,50 @@ subjects:
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: audiobookshelf
+  name: audiobookshelf-storage
   namespace: flux-system
 spec:
   dependsOn:
     - name: base
+    - name: smb
+  interval: 10m
+  path: ./apps/audiobookshelf-storage
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  targetNamespace: audiobookshelf
+  timeout: 5m
+  decryption:
+    provider: sops
+    secretRef:
+      name: sops-age
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: audiobookshelf-migration
+  namespace: flux-system
+spec:
+  dependsOn:
+    - name: audiobookshelf-storage
+  interval: 10m
+  path: ./apps/audiobookshelf-migration
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  targetNamespace: audiobookshelf
+  timeout: 5m
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: audiobookshelf
+  namespace: flux-system
+spec:
+  dependsOn:
+    - name: audiobookshelf-storage
   healthChecks:
     - apiVersion: apps/v1
       kind: Deployment
@@ -94,6 +133,7 @@ spec:
   targetNamespace: audiobookshelf
   serviceAccountName: audiobookshelf-sa
   timeout: 5m
+  suspend: true
   decryption:
     provider: sops
     secretRef:
