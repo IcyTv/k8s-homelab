@@ -4,7 +4,7 @@ metadata:
   name: audiobookshelf
   namespace: audiobookshelf
   annotations:
-    cert-manager.io/cluster-issuer: letsencrypt-prod
+    cert-manager.io/cluster-issuer: letsencrypt-prod-dns01
     traefik.ingress.kubernetes.io/router.entrypoints: websecure
     traefik.ingress.kubernetes.io/service.serversscheme: http
 spec:
