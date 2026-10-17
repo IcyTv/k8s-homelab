@@ -30,7 +30,10 @@ def authelia_cmd(args: list[str]) -> str:
 
 def generate_random(length: int = 72) -> str:
     out = authelia_cmd(["crypto", "rand", "--length", str(length), "--charset", "rfc3986"])
-    return out.strip().splitlines()[-1].strip()
+    val = out.strip().splitlines()[-1].strip()
+    if val.startswith("Random Value:"):
+        val = val.split(":", 1)[1].strip()
+    return val
 
 def generate_hash_pair(length: int = 72) -> tuple[str, str]:
     out = authelia_cmd(["crypto", "hash", "generate", "pbkdf2", "--variant", "sha512",
