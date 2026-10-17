@@ -1,11 +1,9 @@
 #!/usr/bin/env python3
 """
 Generates and SOPS-encrypts all LLDAP, Authelia, and OIDC client secrets natively.
-Does NOT rely on Docker or external container runtimes.
+Uses local authelia & openssl binaries (zero Docker).
 Generated credentials are saved securely to ~/.local/state/authelia/credentials.txt (mode 0600).
 """
-import base64
-import hashlib
 import os
 import pathlib
 import re
@@ -26,30 +24,36 @@ def get_age_recipient() -> str:
         sys.exit("Error: Age recipient key not found in .sops.yaml")
     return match.group(1)
 
-def find_openssl() -> str:
-    path = shutil.which("openssl")
+def find_binary(name: str) -> str:
+    path = shutil.which(name)
     if path:
         return path
-    nix_matches = list(pathlib.Path("/nix/store").glob("*-openssl-*/bin/openssl"))
+    nix_matches = list(pathlib.Path("/nix/store").glob(f"*-{name}-*/bin/{name}"))
     if nix_matches:
         return str(nix_matches[0])
-    sys.exit("Error: openssl not found in PATH or /nix/store")
+    sys.exit(f"Error: {name} not found in PATH or /nix/store")
 
 def generate_random(length: int = 64) -> str:
     alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_"
     return "".join(secrets.choice(alphabet) for _ in range(length))
 
-def generate_pbkdf2_pair(length: int = 72, iterations: int = 310000) -> tuple[str, str]:
-    pwd = generate_random(length)
-    salt = secrets.token_bytes(16)
-    derived = hashlib.pbkdf2_hmac("sha512", pwd.encode(), salt, iterations)
-    salt_b64 = base64.b64encode(salt).decode().rstrip("=")
-    derived_b64 = base64.b64encode(derived).decode().rstrip("=")
-    digest = f"$pbkdf2-sha512${iterations}${salt_b64}${derived_b64}"
+def generate_pbkdf2_pair(length: int = 72) -> tuple[str, str]:
+    authelia_bin = find_binary("authelia")
+    cmd = [authelia_bin, "crypto", "hash", "generate", "pbkdf2", "--variant", "sha512",
+           "--random", "--random.length", str(length), "--random.charset", "rfc3986"]
+    r = subprocess.run(cmd, capture_output=True, text=True, check=True)
+    pwd, digest = "", ""
+    for line in r.stdout.strip().splitlines():
+        if line.startswith("Random Password:"):
+            pwd = line.split(":", 1)[1].strip()
+        elif line.startswith("Digest:"):
+            digest = line.split(":", 1)[1].strip()
+    if not pwd or not digest:
+        sys.exit("Error generating PBKDF2 hash pair")
     return pwd, digest
 
 def generate_rsa_private_key() -> str:
-    openssl = find_openssl()
+    openssl = find_binary("openssl")
     cmd = [openssl, "genpkey", "-algorithm", "RSA", "-pkeyopt", "rsa_keygen_bits:2048"]
     r = subprocess.run(cmd, capture_output=True, text=True, check=True)
     return r.stdout.strip()
@@ -62,21 +66,21 @@ def encrypt_sops_file(path: pathlib.Path, content: str, age_recipient: str) -> N
         sys.exit(f"sops encryption failed for {path}: {r.stderr.decode()}")
 
 def get_existing_secrets() -> dict[str, str]:
-    p = REPO_ROOT / "apps" / "authelia" / "secrets.sops.yaml"
-    if not p.exists():
-        return {}
-    try:
-        r = subprocess.run(["sops", "-d", str(p)], capture_output=True, text=True)
-        if r.returncode != 0:
-            return {}
-        res = {}
-        for line in r.stdout.splitlines():
-            if ":" in line and not line.strip().startswith("#"):
-                k, v = line.split(":", 1)
-                res[k.strip()] = v.strip().strip('"').strip("'")
-        return res
-    except Exception:
-        return {}
+    res = {}
+    for path in [REPO_ROOT / "apps" / "authelia" / "secrets.sops.yaml", REPO_ROOT / "apps" / "lldap" / "secrets.sops.yaml"]:
+        if not path.exists():
+            continue
+        try:
+            r = subprocess.run(["sops", "-d", str(path)], capture_output=True, text=True)
+            if r.returncode != 0:
+                continue
+            for line in r.stdout.splitlines():
+                if ":" in line and not line.strip().startswith("#"):
+                    k, v = line.split(":", 1)
+                    res[k.strip()] = v.strip().strip('"').strip("'")
+        except Exception:
+            continue
+    return res
 
 def main():
     age_key = get_age_recipient()
@@ -87,15 +91,29 @@ def main():
     session_secret = existing.get("session-secret") or generate_random(64)
     storage_enc_key = existing.get("storage-encryption-key") or generate_random(64)
     oidc_hmac_secret = existing.get("oidc-hmac-secret") or generate_random(64)
-    lldap_admin_password = existing.get("lldap-admin-password") or generate_random(32)
+    lldap_admin_password = existing.get("admin-password") or existing.get("lldap-admin-password") or generate_random(32)
 
-    lldap_jwt_secret = generate_random(64)
-    lldap_key_seed = generate_random(64)
+    lldap_jwt_secret = existing.get("jwt-secret") or generate_random(64)
+    lldap_key_seed = existing.get("key-seed") or generate_random(64)
 
     rsa_priv = generate_rsa_private_key()
 
     print("2/4 Generating user credentials & OIDC client secrets...")
-    user_pwd = generate_random(32)
+    # Read user password from credentials.txt if available, else generate
+    xdg_state = os.environ.get("XDG_STATE_HOME") or str(pathlib.Path.home() / ".local" / "state")
+    creds_path = pathlib.Path(xdg_state) / "authelia" / "credentials.txt"
+    user_pwd = ""
+    if creds_path.exists():
+        in_u = False
+        for line in creds_path.read_text().splitlines():
+            if "User Credentials:" in line: in_u = True
+            elif "OIDC Client" in line: in_u = False
+            elif line.startswith("Password:") and in_u:
+                user_pwd = line.split(":", 1)[1].strip()
+                break
+    if not user_pwd:
+        user_pwd = generate_random(32)
+
     headlamp_secret, headlamp_hash = generate_pbkdf2_pair(72)
     paperless_secret, paperless_hash = generate_pbkdf2_pair(72)
     audiobookshelf_secret, audiobookshelf_hash = generate_pbkdf2_pair(72)
@@ -319,11 +337,9 @@ data:
     (authelia_dir / "configmap.yaml").write_text(authelia_config_yaml)
 
     # Save credentials securely to XDG-compliant state directory (chmod 0600)
-    xdg_state = os.environ.get("XDG_STATE_HOME") or str(pathlib.Path.home() / ".local" / "state")
     creds_dir = pathlib.Path(xdg_state) / "authelia"
     creds_dir.mkdir(parents=True, exist_ok=True)
     os.chmod(creds_dir, 0o700)
-    creds_path = creds_dir / "credentials.txt"
     creds_content = f"""LLDAP Admin Credentials:
 Username: admin
 Password: {lldap_admin_password}
@@ -342,7 +358,7 @@ Paperless Sign Token: {sign_token}
     creds_path.write_text(creds_content)
     os.chmod(creds_path, 0o600)
 
-    print(f"3/4 All secrets encrypted and saved into repository.")
+    print("3/4 All secrets encrypted and saved into repository.")
     print(f"4/4 Credentials securely written to {creds_path} (mode 0600).")
 
 if __name__ == "__main__":

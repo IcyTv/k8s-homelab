@@ -25,6 +25,7 @@
           kubeconform
           kustomize
           openssl
+          authelia
         ];
 
         shellHook = ''

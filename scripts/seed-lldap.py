@@ -120,7 +120,7 @@ def main():
         user_info = gql('{ user(userId: "michael") { groups { displayName } } }')["data"]["user"]
         user_group_names = [g["displayName"] for g in user_info.get("groups", [])]
 
-        for target_group in ["admins", "cluster-admins", "users"]:
+        for target_group in ["admins", "cluster-admins", "users", "lldap_admin"]:
             if target_group not in user_group_names:
                 g_id = existing_groups[target_group]
                 gql("mutation addUserToGroup($userId: String!, $groupId: Int!) { addUserToGroup(userId: $userId, groupId: $groupId) { ok } }",

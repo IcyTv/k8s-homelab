@@ -92,7 +92,7 @@ data:
         clients:
           - client_id: 'CT7sh7bEIljUcAd8PxQjOJiBUflkywbhNJ1ZXaLE'
             client_name: 'Headlamp'
-            client_secret: '$pbkdf2-sha512$310000$ySHTyLs9f3/IBfRqgpuoGg$HKg82pFkF1j5W0sXYiYPImFPxLAahKLd+vQZRCQKy1kzq1Ma+FGkgO0PAWlYsFLSpSYVSwrcDobItzxo9B4OrA'
+            client_secret: '$pbkdf2-sha512$310000$0exgyPUqIBwco.86TvU0Mw$TX0jhaa6yEsYrwopyTTqMccZM.w519YZsYFLkNFG4ADcMnWrBsfcFKv1FtJK3ufdarECO9WYNgkd/weiFKlkwA'
             public: false
             authorization_policy: 'headlamp_policy'
             redirect_uris:
@@ -110,7 +110,7 @@ data:
 
           - client_id: 'p0C1IEP67fwdvuYwyntruaY6N45hmZrYhVmdnnib'
             client_name: 'Paperless'
-            client_secret: '$pbkdf2-sha512$310000$TlaL/eG337vYpwvW6C+KKA$cAI7QKsHoqrtIOjruhQH4I/zqOSYq7zwu2qPNW5WkkpTDDFJ7V8pM7SM4/0XUgtkroxsmduWXcTsuSXSKSlJjQ'
+            client_secret: '$pbkdf2-sha512$310000$Jt/z1J3WAZ3u8DB2MBX/Tw$OaRCQac.2gblsPu86jtwtfaKLprvSOOks5LiHV58DdghMJAxkspb7PC3CsdYvEvvvMjkMNdqGRVOAe3nn12xGQ'
             public: false
             authorization_policy: 'client_policy'
             redirect_uris:
@@ -130,7 +130,7 @@ data:
 
           - client_id: 'W05g2BNpNxhqJuzvcFSEh98KK8NDaTYaYOwhIdQ8'
             client_name: 'Audiobookshelf'
-            client_secret: '$pbkdf2-sha512$310000$UH+mfZRlIf6k+5pe6NvHRQ$/0gzPjMAZYCbM3XbaY/aZ8uT2pUXjpCQ/KKuuTYOaax7ZSSA2XY8GfeJ8+mbUrPoOwHdelnxb8Yt35TwsOoEOA'
+            client_secret: '$pbkdf2-sha512$310000$a6FJcxQjVi5SheO5ZcAHaA$IxnWuFCIrRw26hmWd3mEPWJF.65lS2Pq3F3mYTO.h.pkhhSB2sUy1E.c5wfSuwW6mpRMjnPzrJYKpW0zgLlikA'
             public: false
             authorization_policy: 'client_policy'
             redirect_uris:
