@@ -24,6 +24,7 @@
           yq
           kubeconform
           kustomize
+          openssl
         ];
 
         shellHook = ''

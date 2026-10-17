@@ -98,7 +98,7 @@ spec:
             - name: PAPERLESS_SOCIAL_ACCOUNT_SYNC_GROUPS
               value: "true"
             - name: PAPERLESS_SOCIAL_ACCOUNT_SYNC_SUPERUSER_GROUP
-              value: "authentik Admins"
+              value: "admins"
             - name: OIDC_CLIENT_ID
               valueFrom:
                 secretKeyRef:
@@ -110,7 +110,7 @@ spec:
                   name: oidc-secret
                   key: client-secret
             - name: PAPERLESS_SOCIALACCOUNT_PROVIDERS
-              value: '{"openid_connect":{"SCOPE":["openid","profile","email","groups"],"APPS":[{"provider_id":"authentik","name":"Authentik","client_id":"$(OIDC_CLIENT_ID)","secret":"$(OIDC_CLIENT_SECRET)","settings":{"server_url":"https://auth.icytv.de/application/o/paperless/"}}]}}'
+              value: '{"openid_connect":{"SCOPE":["openid","profile","email","groups"],"APPS":[{"provider_id":"authelia","name":"Authelia","client_id":"$(OIDC_CLIENT_ID)","secret":"$(OIDC_CLIENT_SECRET)","settings":{"server_url":"https://auth.icytv.de"}}]}}'
             # Pre-shared API token for paperless-sign-service
             - name: SIGN_SERVICE_TOKEN
               valueFrom:

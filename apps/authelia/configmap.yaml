@@ -1,0 +1,121 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: authelia-config
+  namespace: authelia
+data:
+  configuration.yml: |
+    server:
+      address: 'tcp://0.0.0.0:9091'
+    log:
+      level: 'info'
+    totp:
+      issuer: 'icytv.de'
+    authentication_backend:
+      file:
+        path: '/config/users_database.yml'
+        password:
+          algorithm: 'argon2'
+    access_control:
+      default_policy: 'deny'
+      rules:
+        - domain: 'auth.icytv.de'
+          policy: 'bypass'
+        - domain: '*.icytv.de'
+          policy: 'one_factor'
+    session:
+      secret: '{{ secret "/secrets/session-secret" }}'
+      cookies:
+        - domain: 'icytv.de'
+          authelia_url: 'https://auth.icytv.de'
+          default_redirection_url: 'https://cluster.icytv.de'
+    regulation:
+      max_retries: 5
+      find_time: '2m'
+      ban_time: '5m'
+    storage:
+      encryption_key: '{{ secret "/secrets/storage-encryption-key" }}'
+      local:
+        path: '/data/db.sqlite3'
+    notifier:
+      filesystem:
+        filename: '/data/notifications.txt'
+    identity_validation:
+      reset_password:
+        jwt_secret: '{{ secret "/secrets/jwt-secret" }}'
+    identity_providers:
+      oidc:
+        hmac_secret: '{{ secret "/secrets/oidc-hmac-secret" }}'
+        jwks:
+          - key_id: 'default'
+            algorithm: 'RS256'
+            use: 'sig'
+            key: {{ secret "/secrets/oidc-jwks-key.pem" | mindent 12 "|" | msquote }}
+        cors:
+          endpoints:
+            - 'authorization'
+            - 'token'
+            - 'revocation'
+            - 'introspection'
+            - 'userinfo'
+          allowed_origins:
+            - 'https://cluster.icytv.de'
+            - 'https://docs.icytv.de'
+            - 'https://audiobook.icytv.de'
+        clients:
+          - client_id: 'CT7sh7bEIljUcAd8PxQjOJiBUflkywbhNJ1ZXaLE'
+            client_name: 'Headlamp'
+            client_secret: '$pbkdf2-sha512$310000$pOr37L65dEP/D/rQgDpdhg$IHnNiOA5.PAbQOSN.0.cIMCGXmyLLOvPnCqsYeWBmYJ9iH3XDCaXS/37TdZK6vKS5J1VJB5SHdqVYWZ7eineSQ'
+            public: false
+            authorization_policy: 'one_factor'
+            redirect_uris:
+              - 'https://cluster.icytv.de/oidc-callback'
+            scopes:
+              - 'openid'
+              - 'profile'
+              - 'email'
+              - 'groups'
+            response_types:
+              - 'code'
+            grant_types:
+              - 'authorization_code'
+            token_endpoint_auth_method: 'client_secret_basic'
+
+          - client_id: 'p0C1IEP67fwdvuYwyntruaY6N45hmZrYhVmdnnib'
+            client_name: 'Paperless'
+            client_secret: '$pbkdf2-sha512$310000$2ol5Q2YQpbrXR0Lig0PTkw$xHCkJLg5hDxSHPDka9usEmiWaF2SrqSD/ImGzgM7sj/lvaoYW73RgFU2/jwaGAgpzHE6ZgODDdKb5TtQigiZPw'
+            public: false
+            authorization_policy: 'one_factor'
+            redirect_uris:
+              - 'https://docs.icytv.de/accounts/openid_connect/authelia/login/callback/'
+              - 'https://docs.icytv.de/accounts/openid_connect/authentik/login/callback/'
+              - 'https://docs.icytv.de/accounts/authentik/login/callback/'
+            scopes:
+              - 'openid'
+              - 'profile'
+              - 'email'
+              - 'groups'
+            response_types:
+              - 'code'
+            grant_types:
+              - 'authorization_code'
+            token_endpoint_auth_method: 'client_secret_basic'
+
+          - client_id: 'W05g2BNpNxhqJuzvcFSEh98KK8NDaTYaYOwhIdQ8'
+            client_name: 'Audiobookshelf'
+            client_secret: '$pbkdf2-sha512$310000$LP86/5i.EUwEvqlmKwar0g$AJqO49UVqw1t6H9A3VuEjYd7JSADwxkuKt70kLMBsrXbX43bxklIjXocbzEw4OBnuKkIUuM0fKdR0AhzyF57TA'
+            public: false
+            authorization_policy: 'one_factor'
+            redirect_uris:
+              - 'https://audiobook.icytv.de/auth/openid/callback'
+              - 'https://audiobook.icytv.de/auth/openid/mobile-redirect'
+              - 'audiobookshelf://oauth'
+            scopes:
+              - 'openid'
+              - 'profile'
+              - 'email'
+            response_types:
+              - 'code'
+            grant_types:
+              - 'authorization_code'
+            token_endpoint_auth_method: 'client_secret_basic'

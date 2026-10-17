@@ -3,7 +3,7 @@ kind: Kustomization
 resources:
   - coredns-custom.yaml
   - helmrepos.yaml
-  - authentik.yaml
+  - authelia.yaml
   - audiobookshelf.yaml
   - cert-manager.yaml
   - headlamp.yaml

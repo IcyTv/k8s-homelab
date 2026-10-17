@@ -4,7 +4,7 @@ metadata:
   name: coredns-custom
   namespace: kube-system
 data:
-  authentik.override: |
+  auth.override: |
     # Keep OIDC traffic inside this cluster while preserving the public issuer and TLS hostname.
     # Exact rewrites also rewrite response names back to the original query name.
     rewrite stop name exact auth.icytv.de traefik.traefik.svc.cluster.local
