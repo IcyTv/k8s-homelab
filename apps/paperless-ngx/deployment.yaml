@@ -57,10 +57,10 @@ spec:
           resources:
             requests:
               cpu: 100m
-              memory: 256Mi
+              memory: 512Mi
             limits:
               cpu: "1"
-              memory: 1Gi
+              memory: 1800Mi
           env:
             - name: PAPERLESS_REDIS
               value: redis://localhost:6379
