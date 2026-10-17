@@ -25,6 +25,12 @@ spec:
         - name: broker
           image: valkey/valkey:9-alpine
           restartPolicy: Always
+          resources:
+            requests:
+              cpu: 25m
+              memory: 32Mi
+            limits:
+              memory: 128Mi
           startupProbe:
             exec:
               command: [valkey-cli, ping]
@@ -48,11 +54,23 @@ spec:
                   value: docs.icytv.de
             periodSeconds: 5
             timeoutSeconds: 3
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: "1"
+              memory: 1Gi
           env:
             - name: PAPERLESS_REDIS
               value: redis://localhost:6379
             - name: PAPERLESS_DBENGINE
               value: sqlite
+            # Keep background processing bounded on the 4 GB homelab node.
+            - name: PAPERLESS_TASK_WORKERS
+              value: "1"
+            - name: PAPERLESS_THREADS_PER_WORKER
+              value: "1"
             # The post-start Django script runs outside manage.py.
             - name: DJANGO_SETTINGS_MODULE
               value: paperless.settings
@@ -103,25 +121,37 @@ spec:
             postStart:
               exec:
                 command:
-                  - /bin/bash
+                  - python3
+                  - -u
                   - -c
                   - |
-                    for i in {1..30}; do
-                      if python3 -c "import django; django.setup(); from django.contrib.auth.models import User; from rest_framework.authtoken.models import Token; User.objects.exists(); Token.objects.exists()" 2>/dev/null; then
-                        break
-                      fi
-                      sleep 2
-                    done
-                    python3 -c "
-                    import os, django
+                    import os
+                    import sqlite3
+                    import time
+
+                    # Poll the SQLite schema cheaply; load Django only once.
+                    for attempt in range(30):
+                        try:
+                            with sqlite3.connect('file:/usr/src/paperless/data/db.sqlite3?mode=ro', uri=True, timeout=1) as db:
+                                tables = {row[0] for row in db.execute("SELECT name FROM sqlite_master WHERE type='table'")}
+                            if {'auth_user', 'authtoken_token'} <= tables:
+                                break
+                        except sqlite3.Error:
+                            pass
+                        time.sleep(2)
+                    else:
+                        raise RuntimeError('Database migrations were not ready for token provisioning')
+
+                    import django
                     django.setup()
                     from django.contrib.auth.models import User
+                    from django.db import transaction
                     from rest_framework.authtoken.models import Token
-                    user, _ = User.objects.get_or_create(username='sign-service', defaults={'is_superuser': True, 'is_staff': True, 'is_active': True})
-                    Token.objects.filter(user=user).delete()
-                    Token.objects.create(user=user, key=os.environ['SIGN_SERVICE_TOKEN'])
+                    with transaction.atomic():
+                        user, _ = User.objects.get_or_create(username='sign-service', defaults={'is_superuser': True, 'is_staff': True, 'is_active': True})
+                        Token.objects.filter(user=user).delete()
+                        Token.objects.create(user=user, key=os.environ['SIGN_SERVICE_TOKEN'])
                     print('Sign-service API token provisioned successfully')
-                    "
           volumeMounts:
             - name: data
               mountPath: /usr/src/paperless/data
