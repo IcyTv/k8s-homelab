@@ -282,6 +282,7 @@ data:
             client_secret: '{headlamp_hash}'
             public: false
             authorization_policy: 'headlamp_policy'
+            consent_mode: 'implicit'
             redirect_uris:
               - 'https://cluster.icytv.de/oidc-callback'
             scopes:
@@ -300,6 +301,7 @@ data:
             client_secret: '{paperless_hash}'
             public: false
             authorization_policy: 'client_policy'
+            consent_mode: 'implicit'
             redirect_uris:
               - 'https://docs.icytv.de/accounts/oidc/authelia/login/callback/'
               - 'https://docs.icytv.de/accounts/openid_connect/authelia/login/callback/'
@@ -322,6 +324,7 @@ data:
             client_secret: '{audiobookshelf_hash}'
             public: false
             authorization_policy: 'client_policy'
+            consent_mode: 'implicit'
             redirect_uris:
               - 'https://audiobook.icytv.de/auth/openid/callback'
               - 'https://audiobook.icytv.de/auth/openid/mobile-redirect'

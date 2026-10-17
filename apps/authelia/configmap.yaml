@@ -95,6 +95,7 @@ data:
             client_secret: '$pbkdf2-sha512$310000$0exgyPUqIBwco.86TvU0Mw$TX0jhaa6yEsYrwopyTTqMccZM.w519YZsYFLkNFG4ADcMnWrBsfcFKv1FtJK3ufdarECO9WYNgkd/weiFKlkwA'
             public: false
             authorization_policy: 'headlamp_policy'
+            consent_mode: 'implicit'
             redirect_uris:
               - 'https://cluster.icytv.de/oidc-callback'
             scopes:
@@ -113,6 +114,7 @@ data:
             client_secret: '$pbkdf2-sha512$310000$Jt/z1J3WAZ3u8DB2MBX/Tw$OaRCQac.2gblsPu86jtwtfaKLprvSOOks5LiHV58DdghMJAxkspb7PC3CsdYvEvvvMjkMNdqGRVOAe3nn12xGQ'
             public: false
             authorization_policy: 'client_policy'
+            consent_mode: 'implicit'
             redirect_uris:
               - 'https://docs.icytv.de/accounts/oidc/authelia/login/callback/'
               - 'https://docs.icytv.de/accounts/openid_connect/authelia/login/callback/'
@@ -135,6 +137,7 @@ data:
             client_secret: '$pbkdf2-sha512$310000$a6FJcxQjVi5SheO5ZcAHaA$IxnWuFCIrRw26hmWd3mEPWJF.65lS2Pq3F3mYTO.h.pkhhSB2sUy1E.c5wfSuwW6mpRMjnPzrJYKpW0zgLlikA'
             public: false
             authorization_policy: 'client_policy'
+            consent_mode: 'implicit'
             redirect_uris:
               - 'https://audiobook.icytv.de/auth/openid/callback'
               - 'https://audiobook.icytv.de/auth/openid/mobile-redirect'
