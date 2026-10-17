@@ -3,4 +3,3 @@ kind: Kustomization
 namespace: audiobookshelf
 resources:
   - storage.yaml
-  - storagebox-smb-secret.yaml

@@ -8,3 +8,4 @@ resources:
   - headlamp.yaml
   - smb.yaml
   - traefik.yaml
+  - paperless-ngx.yaml
