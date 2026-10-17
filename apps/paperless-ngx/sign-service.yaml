@@ -28,12 +28,27 @@ spec:
       labels:
         app.kubernetes.io/name: paperless-sign-service
     spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
       containers:
         - name: sign-service
-          image: ghcr.io/bobber446/paperless-sign-service:latest
+          image: ghcr.io/icytv/paperless-sign-service:build-1
           ports:
             - containerPort: 8088
               name: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: http
+            initialDelaySeconds: 15
           env:
             # Cluster-internal connection to Paperless-ngx
             - name: PAPERLESS_BASE_URL

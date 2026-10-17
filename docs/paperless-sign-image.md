@@ -21,6 +21,13 @@ Renovate tracks:
 - Numbered `build-N` deployment image tags through the Kubernetes manager with
   a custom versioning rule.
 
+Renovate currently opens this repository's PRs against `main`. The new manager
+configuration is on `hetzner`; to activate scheduled updates, merge it into the
+Renovate-managed branch or configure Renovate there to scan `hetzner` with
+base-branch configuration enabled. The build workflow itself only publishes
+from `hetzner`. Changes in this branch alone do not reconfigure the bot's
+default-branch discovery.
+
 After the first publish, GitHub may require a one-time visibility change in
 the package settings to **Public** before Kubernetes can pull anonymously:
 https://github.com/users/IcyTv/packages/container/paperless-sign-service/settings
