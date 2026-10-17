@@ -8,6 +8,10 @@ metadata:
     app.kubernetes.io/part-of: paperless-ngx
 spec:
   replicas: 1
+  # SQLite and local state must not be opened by overlapping rollout replicas.
+  strategy:
+    type: Recreate
+    rollingUpdate: null
   selector:
     matchLabels:
       app.kubernetes.io/name: paperless-ngx
@@ -27,6 +31,9 @@ spec:
               value: redis://localhost:6379
             - name: PAPERLESS_DBENGINE
               value: sqlite
+            # The post-start Django script runs outside manage.py.
+            - name: DJANGO_SETTINGS_MODULE
+              value: paperless.settings
             - name: PAPERLESS_URL
               value: https://docs.icytv.de
             - name: PAPERLESS_SECRET_KEY
@@ -78,7 +85,7 @@ spec:
                   - -c
                   - |
                     for i in {1..30}; do
-                      if python3 -c "import django; django.setup(); from django.contrib.auth.models import User; User.objects.all()" 2>/dev/null; then
+                      if python3 -c "import django; django.setup(); from django.contrib.auth.models import User; from rest_framework.authtoken.models import Token; User.objects.exists(); Token.objects.exists()" 2>/dev/null; then
                         break
                       fi
                       sleep 2

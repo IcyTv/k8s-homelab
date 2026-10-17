@@ -26,3 +26,20 @@ expose credentials in commands or diagnostic output.
 
 All live operations for this deployment must explicitly use
 `--kubeconfig ./kubeconfig.hetzner.yaml`. The default kubeconfig is another cluster.
+
+## SELinux on Hetzner's Rocky Linux node
+
+SELinux must remain enforcing. Container access to the driver's `cifs_t` mounts
+requires the standard node policy boolean:
+
+```sh
+sudo setsebool -P virt_use_samba on
+getsebool virt_use_samba
+```
+
+Apply this during provisioning of each SELinux-enforcing worker that hosts SMB
+consumers. It permits SMB access for the node's virtualization/container SELinux
+domains; it does not grant Unix permissions or bypass SMB authentication.
+Do not make application pods privileged or disable SELinux to work around this.
+A privileged diagnostic mount may succeed while an ordinary container is denied
+by this policy, even with identical UID/GID settings.
