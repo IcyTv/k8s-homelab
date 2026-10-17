@@ -81,6 +81,8 @@ metadata:
   name: paperless-ngx
   namespace: flux-system
 spec:
+  # Temporary capacity pause: resume only after reviewing node resource headroom.
+  suspend: true
   dependsOn:
     - name: paperless-ngx-storage
   healthChecks:
