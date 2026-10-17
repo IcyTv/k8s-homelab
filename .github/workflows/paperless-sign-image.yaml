@@ -1,0 +1,83 @@
+name: Build Paperless signing image
+
+on:
+  push:
+    branches: [hetzner]
+    paths:
+      - images/paperless-sign-service/**
+      - .github/workflows/paperless-sign-image.yaml
+  pull_request:
+    paths:
+      - images/paperless-sign-service/**
+      - .github/workflows/paperless-sign-image.yaml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: paperless-sign-image-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Check out build configuration
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Read pinned upstream revision
+        id: upstream
+        shell: bash
+        run: |
+          revision=$(cat images/paperless-sign-service/upstream.sha)
+          [[ "$revision" =~ ^[0-9a-f]{40}$ ]]
+          echo "revision=$revision" >> "$GITHUB_OUTPUT"
+      - name: Check out upstream application
+        uses: actions/checkout@v7
+        with:
+          repository: BoBBer446/Paperless-Sign-Service
+          ref: ${{ steps.upstream.outputs.revision }}
+          path: upstream
+          persist-credentials: false
+      - name: Build image
+        env:
+          UPSTREAM_REVISION: ${{ steps.upstream.outputs.revision }}
+        run: |
+          docker build --pull \
+            --file images/paperless-sign-service/Dockerfile \
+            --label org.opencontainers.image.source="https://github.com/${GITHUB_REPOSITORY}" \
+            --label org.opencontainers.image.revision="$UPSTREAM_REVISION" \
+            --label org.opencontainers.image.created="$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+            --label org.opencontainers.image.licenses=MIT \
+            --tag paperless-sign-test upstream
+      - name: Smoke-test application without credentials
+        run: |
+          docker run --detach --name paperless-sign-smoke paperless-sign-test
+          for attempt in $(seq 1 30); do
+            state=$(docker inspect --format '{{.State.Health.Status}}' paperless-sign-smoke)
+            if [ "$state" = healthy ]; then
+              exit 0
+            fi
+            sleep 3
+          done
+          docker logs paperless-sign-smoke
+          exit 1
+      - name: Publish numbered image
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/hetzner'
+        env:
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          image="ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/paperless-sign-service:build-${GITHUB_RUN_NUMBER}"
+          printf '%s' "$GHCR_TOKEN" | docker login ghcr.io --username "$GITHUB_ACTOR" --password-stdin
+          docker tag paperless-sign-test "$image"
+          docker push "$image"
+          echo "Published $image" >> "$GITHUB_STEP_SUMMARY"
+      - name: Clean up smoke-test container
+        if: always()
+        run: docker container rm --force paperless-sign-smoke || true

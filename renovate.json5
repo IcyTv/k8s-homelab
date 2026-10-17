@@ -40,9 +40,23 @@
       "depNameTemplate": "Headlamp Flux plugin",
       "extractVersionTemplate": "^flux-(?<version>.+)$",
       "versioningTemplate": "semver"
+    },
+    {
+      "customType": "regex",
+      "managerFilePatterns": ["/^images\\/paperless-sign-service\\/upstream\\.sha$/"],
+      "matchStrings": ["(?<currentDigest>[a-f0-9]{40})"],
+      "currentValueTemplate": "main",
+      "datasourceTemplate": "git-refs",
+      "packageNameTemplate": "https://github.com/BoBBer446/Paperless-Sign-Service",
+      "depNameTemplate": "Paperless signing service upstream"
     }
   ],
   "packageRules": [
+    {
+      "description": "Track numbered homelab signing image builds",
+      "matchPackageNames": ["ghcr.io/icytv/paperless-sign-service"],
+      "versioning": "regex:^build-(?<patch>\\d+)$"
+    },
     {
       "description": "Automatically merge patch releases after CI passes",
       "matchDatasources": ["docker", "github-releases", "github-tags", "helm"],
@@ -71,6 +85,13 @@
     {
       "description": "Authentik upgrades can require ordered migrations",
       "matchPackageNames": ["authentik"],
+      "addLabels": ["review-required"],
+      "automerge": false
+    },
+    {
+      "description": "Review signing service source updates (git refs have no release timestamps)",
+      "matchDepNames": ["Paperless signing service upstream"],
+      "minimumReleaseAgeBehaviour": "timestamp-optional",
       "addLabels": ["review-required"],
       "automerge": false
     }
