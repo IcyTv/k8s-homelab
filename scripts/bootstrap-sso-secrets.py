@@ -315,7 +315,7 @@ data:
               - 'code'
             grant_types:
               - 'authorization_code'
-            token_endpoint_auth_method: 'client_secret_basic'
+            token_endpoint_auth_method: 'client_secret_post'
 
           - client_id: 'W05g2BNpNxhqJuzvcFSEh98KK8NDaTYaYOwhIdQ8'
             client_name: 'Audiobookshelf'
