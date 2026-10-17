@@ -301,7 +301,9 @@ data:
             public: false
             authorization_policy: 'client_policy'
             redirect_uris:
+              - 'https://docs.icytv.de/accounts/oidc/authelia/login/callback/'
               - 'https://docs.icytv.de/accounts/openid_connect/authelia/login/callback/'
+              - 'https://docs.icytv.de/accounts/oidc/authentik/login/callback/'
               - 'https://docs.icytv.de/accounts/openid_connect/authentik/login/callback/'
               - 'https://docs.icytv.de/accounts/authentik/login/callback/'
             scopes:
