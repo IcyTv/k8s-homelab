@@ -117,6 +117,17 @@ spec:
                 secretKeyRef:
                   name: oidc-secret
                   key: sign-service-token
+            # Gmail OAuth2 Email Integration
+            - name: PAPERLESS_GMAIL_OAUTH_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: gmail-oauth-secret
+                  key: client-id
+            - name: PAPERLESS_GMAIL_OAUTH_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: gmail-oauth-secret
+                  key: client-secret
           lifecycle:
             postStart:
               exec:

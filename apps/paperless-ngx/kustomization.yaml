@@ -4,6 +4,7 @@ namespace: paperless-ngx
 resources:
   - secret-key.yaml
   - oidc-secret.yaml
+  - gmail-oauth-secret.yaml
   - deployment.yaml
   - service.yaml
   - ingress.yaml
