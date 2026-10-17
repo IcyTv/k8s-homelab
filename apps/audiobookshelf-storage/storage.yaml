@@ -25,7 +25,7 @@ spec:
       subDir: "audiobooks"
     nodeStageSecretRef:
       name: storagebox-smb
-      namespace: smb
+      namespace: flux-system
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -89,7 +89,7 @@ spec:
       subDir: "podcasts"
     nodeStageSecretRef:
       name: storagebox-smb
-      namespace: smb
+      namespace: flux-system
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim

@@ -24,7 +24,7 @@ spec:
               name: http
           env:
             - name: PAPERLESS_REDIS
-              value: redis://broker:6379
+              value: redis://localhost:6379
             - name: PAPERLESS_DBENGINE
               value: sqlite
             - name: PAPERLESS_URL
@@ -35,9 +35,9 @@ spec:
                   name: secret-key
                   key: secret-key
             - name: PAPERLESS_CONSUMER_POLLING_INTERVAL
-              value: 10
+              value: "10"
             - name: PAPERLESS_CONSUMER_STABILITY_DELAY
-              value: 10
+              value: "10"
             # Allow OCR for digitally signed documents while preserving the original
             - name: PAPERLESS_OCR_USER_ARGS
               value: '{"invalidate_digital_signatures": true}'

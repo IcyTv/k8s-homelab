@@ -36,7 +36,7 @@ spec:
       subDir: "documents/media"
     nodeStageSecretRef:
       name: storagebox-smb
-      namespace: smb
+      namespace: flux-system
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -78,7 +78,7 @@ spec:
       subDir: "documents/import"
     nodeStageSecretRef:
       name: storagebox-smb
-      namespace: smb
+      namespace: flux-system
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim

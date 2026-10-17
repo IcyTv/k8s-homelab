@@ -24,6 +24,57 @@ subjects:
     name: paperless-ngx-sa
     namespace: flux-system
 ---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: paperless-ngx-sa-traefik-crd
+  namespace: paperless-ngx
+rules:
+  - apiGroups:
+      - traefik.io
+    resources:
+      - middlewares
+    verbs:
+      - get
+      - list
+      - watch
+      - create
+      - update
+      - patch
+      - delete
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: paperless-ngx-sa-traefik-crd
+  namespace: paperless-ngx
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: paperless-ngx-sa-traefik-crd
+subjects:
+  - kind: ServiceAccount
+    name: paperless-ngx-sa
+    namespace: flux-system
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: paperless-ngx-storage
+  namespace: flux-system
+spec:
+  dependsOn:
+    - name: base
+    - name: smb
+  interval: 10m
+  path: ./apps/paperless-ngx-storage
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  targetNamespace: paperless-ngx
+  timeout: 5m
+---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
@@ -31,8 +82,7 @@ metadata:
   namespace: flux-system
 spec:
   dependsOn:
-    - name: base
-    - name: smb
+    - name: paperless-ngx-storage
   healthChecks:
     - apiVersion: apps/v1
       kind: Deployment
