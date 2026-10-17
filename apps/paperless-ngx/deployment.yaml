@@ -16,10 +16,6 @@ spec:
       labels:
         app.kubernetes.io/name: paperless-ngx
     spec:
-      hostAliases:
-        - ip: "10.43.170.192"
-          hostnames:
-            - "auth.icytv.de"
       containers:
         - name: paperless-ngx
           image: paperlessngx/paperless-ngx:latest

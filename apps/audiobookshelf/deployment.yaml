@@ -16,10 +16,6 @@ spec:
       labels:
         app.kubernetes.io/name: audiobookshelf
     spec:
-      hostAliases:
-        - ip: "10.43.170.192"
-          hostnames:
-            - "auth.icytv.de"
       containers:
         - name: audiobookshelf
           # Flux Image Automation marker references ImagePolicy flux-system:audiobookshelf

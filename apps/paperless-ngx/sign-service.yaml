@@ -28,10 +28,6 @@ spec:
       labels:
         app.kubernetes.io/name: paperless-sign-service
     spec:
-      hostAliases:
-        - ip: "10.43.170.192"
-          hostnames:
-            - "auth.icytv.de"
       containers:
         - name: sign-service
           image: ghcr.io/bobber446/paperless-sign-service:latest
