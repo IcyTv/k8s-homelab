@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Generates and SOPS-encrypts all Authelia secrets, users, and OIDC client secrets.
+Generates and SOPS-encrypts all LLDAP, Authelia, and OIDC client secrets.
 No secrets or credentials are ever printed to stdout/stderr or sent over chat.
-Generated user login credentials are saved privately to ~/.authelia-credentials.txt (mode 0600).
+Generated credentials are saved securely to ~/.local/state/authelia/credentials.txt (mode 0600).
 """
 import os
 import pathlib
@@ -86,12 +86,16 @@ def main():
     storage_enc_key = generate_random(64)
     oidc_hmac_secret = generate_random(64)
 
+    lldap_jwt_secret = generate_random(64)
+    lldap_key_seed = generate_random(64)
+    lldap_admin_password = generate_random(32)
+
     tmp_dir = pathlib.Path("/tmp/opencode/authelia-keygen")
     tmp_dir.mkdir(parents=True, exist_ok=True)
     rsa_priv, rsa_pub = generate_rsa_keypair(tmp_dir)
     tmp_dir.rmdir()
 
-    print("2/5 Generating admin user credentials & Argon2id hash...")
+    print("2/5 Generating user credentials...")
     user_pwd, user_hash = generate_argon2_pair(32)
 
     print("3/5 Generating OIDC client credentials & PBKDF2 digests...")
@@ -100,7 +104,23 @@ def main():
     audiobookshelf_secret, audiobookshelf_hash = generate_hash_pair(72)
     sign_token = generate_random(48)
 
-    # 1. Authelia core secrets
+    # 1. LLDAP secrets
+    lldap_dir = REPO_ROOT / "apps" / "lldap"
+    lldap_dir.mkdir(parents=True, exist_ok=True)
+    lldap_secrets_yaml = f"""apiVersion: v1
+kind: Secret
+metadata:
+  name: lldap-secrets
+  namespace: lldap
+type: Opaque
+stringData:
+  jwt-secret: "{lldap_jwt_secret}"
+  key-seed: "{lldap_key_seed}"
+  admin-password: "{lldap_admin_password}"
+"""
+    encrypt_sops_file(lldap_dir / "secrets.sops.yaml", lldap_secrets_yaml, age_key)
+
+    # 2. Authelia core secrets
     authelia_dir = REPO_ROOT / "apps" / "authelia"
     authelia_dir.mkdir(parents=True, exist_ok=True)
 
@@ -115,31 +135,11 @@ stringData:
   session-secret: "{session_secret}"
   storage-encryption-key: "{storage_enc_key}"
   oidc-hmac-secret: "{oidc_hmac_secret}"
+  lldap-admin-password: "{lldap_admin_password}"
   oidc-jwks-key.pem: |
 {chr(10).join('    ' + line for line in rsa_priv.strip().splitlines())}
 """
     encrypt_sops_file(authelia_dir / "secrets.sops.yaml", authelia_secrets_yaml, age_key)
-
-    # 2. Authelia users database
-    authelia_users_yaml = f"""apiVersion: v1
-kind: Secret
-metadata:
-  name: authelia-users
-  namespace: authelia
-type: Opaque
-stringData:
-  users_database.yml: |
-    users:
-      michael:
-        disabled: false
-        displayname: "Michael Finger"
-        password: "{user_hash}"
-        email: "michael.finger@icytv.de"
-        groups:
-          - "admins"
-          - "authentik Admins"
-"""
-    encrypt_sops_file(authelia_dir / "users.sops.yaml", authelia_users_yaml, age_key)
 
     # 3. Headlamp OIDC secret
     headlamp_secret_yaml = f"""apiVersion: v1
@@ -151,7 +151,7 @@ type: Opaque
 stringData:
   OIDC_CLIENT_ID: "CT7sh7bEIljUcAd8PxQjOJiBUflkywbhNJ1ZXaLE"
   OIDC_CLIENT_SECRET: "{headlamp_secret}"
-  OIDC_ISSUER_URL: "https://auth.icytv.de"
+  OIDC_ISSUER_URL: "https://auth.icytv.de/oauth"
 """
     encrypt_sops_file(REPO_ROOT / "apps" / "headlamp" / "oidc-secret.yaml", headlamp_secret_yaml, age_key)
 
@@ -169,7 +169,7 @@ stringData:
 """
     encrypt_sops_file(REPO_ROOT / "apps" / "paperless-ngx" / "oidc-secret.yaml", paperless_secret_yaml, age_key)
 
-    # 5. Write hashes to Authelia configmap
+    # 5. Write configuration to Authelia configmap
     authelia_config_yaml = f"""apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -178,28 +178,40 @@ metadata:
 data:
   configuration.yml: |
     server:
-      address: 'tcp://0.0.0.0:9091'
+      address: 'tcp://0.0.0.0:9091/oauth'
     log:
       level: 'info'
     totp:
       issuer: 'icytv.de'
     authentication_backend:
-      file:
-        path: '/config/users_database.yml'
-        password:
-          algorithm: 'argon2'
+      ldap:
+        implementation: 'lldap'
+        address: 'ldap://lldap.lldap.svc.cluster.local:3890'
+        base_dn: 'DC=icytv,DC=de'
+        user: 'UID=admin,OU=people,DC=icytv,DC=de'
+        password: '{{{{ secret "/secrets/lldap-admin-password" }}}}'
     access_control:
       default_policy: 'deny'
       rules:
         - domain: 'auth.icytv.de'
+          resources:
+            - '^/oauth([/?].*)?$'
+            - '^/\\\.well-known([/?].*)?$'
           policy: 'bypass'
+        - domain: '*.icytv.de'
+          subject:
+            - 'group:2fa'
+          policy: 'two_factor'
         - domain: '*.icytv.de'
           policy: 'one_factor'
     session:
       secret: '{{{{ secret "/secrets/session-secret" }}}}'
+      expiration: '12h'
+      inactivity: '30m'
+      remember_me: '14d'
       cookies:
         - domain: 'icytv.de'
-          authelia_url: 'https://auth.icytv.de'
+          authelia_url: 'https://auth.icytv.de/oauth'
           default_redirection_url: 'https://cluster.icytv.de'
     regulation:
       max_retries: 5
@@ -234,12 +246,27 @@ data:
             - 'https://cluster.icytv.de'
             - 'https://docs.icytv.de'
             - 'https://audiobook.icytv.de'
+        authorization_policies:
+          headlamp_policy:
+            default_policy: 'deny'
+            rules:
+              - policy: 'two_factor'
+                subject: 'group:2fa'
+              - policy: 'one_factor'
+                subject:
+                  - 'group:cluster-admins'
+                  - 'group:admins'
+          client_policy:
+            default_policy: 'one_factor'
+            rules:
+              - policy: 'two_factor'
+                subject: 'group:2fa'
         clients:
           - client_id: 'CT7sh7bEIljUcAd8PxQjOJiBUflkywbhNJ1ZXaLE'
             client_name: 'Headlamp'
             client_secret: '{headlamp_hash}'
             public: false
-            authorization_policy: 'one_factor'
+            authorization_policy: 'headlamp_policy'
             redirect_uris:
               - 'https://cluster.icytv.de/oidc-callback'
             scopes:
@@ -257,7 +284,7 @@ data:
             client_name: 'Paperless'
             client_secret: '{paperless_hash}'
             public: false
-            authorization_policy: 'one_factor'
+            authorization_policy: 'client_policy'
             redirect_uris:
               - 'https://docs.icytv.de/accounts/openid_connect/authelia/login/callback/'
               - 'https://docs.icytv.de/accounts/openid_connect/authentik/login/callback/'
@@ -277,7 +304,7 @@ data:
             client_name: 'Audiobookshelf'
             client_secret: '{audiobookshelf_hash}'
             public: false
-            authorization_policy: 'one_factor'
+            authorization_policy: 'client_policy'
             redirect_uris:
               - 'https://audiobook.icytv.de/auth/openid/callback'
               - 'https://audiobook.icytv.de/auth/openid/mobile-redirect'
@@ -300,7 +327,11 @@ data:
     creds_dir.mkdir(parents=True, exist_ok=True)
     os.chmod(creds_dir, 0o700)
     creds_path = creds_dir / "credentials.txt"
-    creds_content = f"""Authelia Generated Credentials:
+    creds_content = f"""LLDAP Admin Credentials:
+Username: admin
+Password: {lldap_admin_password}
+
+User Credentials:
 Username: michael
 Email: michael.finger@icytv.de
 Password: {user_pwd}

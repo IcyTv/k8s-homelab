@@ -32,6 +32,7 @@ metadata:
 spec:
   dependsOn:
     - name: base
+    - name: lldap
   healthChecks:
     - apiVersion: apps/v1
       kind: Deployment

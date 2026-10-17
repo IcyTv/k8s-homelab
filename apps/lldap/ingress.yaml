@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: lldap
+  namespace: lldap
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    traefik.ingress.kubernetes.io/service.serversscheme: http
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: auth.icytv.de
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: lldap
+                port:
+                  number: 17170

@@ -99,7 +99,7 @@ metadata:
   namespace: paperless-ngx
 spec:
   forwardAuth:
-    address: http://authelia.authelia.svc.cluster.local:9091/api/verify?rd=https%3A%2F%2Fauth.icytv.de%2F
+    address: http://authelia.authelia.svc.cluster.local:9091/api/verify?rd=https%3A%2F%2Fauth.icytv.de%2Foauth%2F
     trustForwardHeader: true
     authResponseHeaders:
       - Remote-User

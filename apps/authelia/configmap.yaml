@@ -6,28 +6,40 @@ metadata:
 data:
   configuration.yml: |
     server:
-      address: 'tcp://0.0.0.0:9091'
+      address: 'tcp://0.0.0.0:9091/oauth'
     log:
       level: 'info'
     totp:
       issuer: 'icytv.de'
     authentication_backend:
-      file:
-        path: '/config/users_database.yml'
-        password:
-          algorithm: 'argon2'
+      ldap:
+        implementation: 'lldap'
+        address: 'ldap://lldap.lldap.svc.cluster.local:3890'
+        base_dn: 'DC=icytv,DC=de'
+        user: 'UID=admin,OU=people,DC=icytv,DC=de'
+        password: '{{ secret "/secrets/lldap-admin-password" }}'
     access_control:
       default_policy: 'deny'
       rules:
         - domain: 'auth.icytv.de'
+          resources:
+            - '^/oauth([/?].*)?$'
+            - '^/\.well-known([/?].*)?$'
           policy: 'bypass'
+        - domain: '*.icytv.de'
+          subject:
+            - 'group:2fa'
+          policy: 'two_factor'
         - domain: '*.icytv.de'
           policy: 'one_factor'
     session:
       secret: '{{ secret "/secrets/session-secret" }}'
+      expiration: '12h'
+      inactivity: '30m'
+      remember_me: '14d'
       cookies:
         - domain: 'icytv.de'
-          authelia_url: 'https://auth.icytv.de'
+          authelia_url: 'https://auth.icytv.de/oauth'
           default_redirection_url: 'https://cluster.icytv.de'
     regulation:
       max_retries: 5
@@ -62,12 +74,27 @@ data:
             - 'https://cluster.icytv.de'
             - 'https://docs.icytv.de'
             - 'https://audiobook.icytv.de'
+        authorization_policies:
+          headlamp_policy:
+            default_policy: 'deny'
+            rules:
+              - policy: 'two_factor'
+                subject: 'group:2fa'
+              - policy: 'one_factor'
+                subject:
+                  - 'group:cluster-admins'
+                  - 'group:admins'
+          client_policy:
+            default_policy: 'one_factor'
+            rules:
+              - policy: 'two_factor'
+                subject: 'group:2fa'
         clients:
           - client_id: 'CT7sh7bEIljUcAd8PxQjOJiBUflkywbhNJ1ZXaLE'
             client_name: 'Headlamp'
-            client_secret: '$pbkdf2-sha512$310000$pOr37L65dEP/D/rQgDpdhg$IHnNiOA5.PAbQOSN.0.cIMCGXmyLLOvPnCqsYeWBmYJ9iH3XDCaXS/37TdZK6vKS5J1VJB5SHdqVYWZ7eineSQ'
+            client_secret: '$pbkdf2-sha512$310000$zzqvcwxJuj2UZi3VEK80Ig$i2hfLnHDIN.y4gsM8eMnw4iBdFO4xKLT0v57opnGcWO05oxX5sUCGAEgPRE7ATpU/8fKPA17leph02oArJmn8w'
             public: false
-            authorization_policy: 'one_factor'
+            authorization_policy: 'headlamp_policy'
             redirect_uris:
               - 'https://cluster.icytv.de/oidc-callback'
             scopes:
@@ -83,9 +110,9 @@ data:
 
           - client_id: 'p0C1IEP67fwdvuYwyntruaY6N45hmZrYhVmdnnib'
             client_name: 'Paperless'
-            client_secret: '$pbkdf2-sha512$310000$2ol5Q2YQpbrXR0Lig0PTkw$xHCkJLg5hDxSHPDka9usEmiWaF2SrqSD/ImGzgM7sj/lvaoYW73RgFU2/jwaGAgpzHE6ZgODDdKb5TtQigiZPw'
+            client_secret: '$pbkdf2-sha512$310000$Uf0C48V/0F.H7TxbDT8ZVw$Ub4CoaFHZ8E.m7UTroT4NwuK1g84ADH6auVdf0ReJY91V3c3AKwB0t96HGrABmyEOyCu8ThuW8cewI6DOupSBA'
             public: false
-            authorization_policy: 'one_factor'
+            authorization_policy: 'client_policy'
             redirect_uris:
               - 'https://docs.icytv.de/accounts/openid_connect/authelia/login/callback/'
               - 'https://docs.icytv.de/accounts/openid_connect/authentik/login/callback/'
@@ -103,9 +130,9 @@ data:
 
           - client_id: 'W05g2BNpNxhqJuzvcFSEh98KK8NDaTYaYOwhIdQ8'
             client_name: 'Audiobookshelf'
-            client_secret: '$pbkdf2-sha512$310000$LP86/5i.EUwEvqlmKwar0g$AJqO49UVqw1t6H9A3VuEjYd7JSADwxkuKt70kLMBsrXbX43bxklIjXocbzEw4OBnuKkIUuM0fKdR0AhzyF57TA'
+            client_secret: '$pbkdf2-sha512$310000$oDrep44GE20OugGPqQG.yA$qSqnRn7/Rf//TdUHm/cCQsv99pi01mhIA5o4NOtuIYnbyoghGb7nKQhhvivSGnBYqGlsVixl8XwbccvGs96bBw'
             public: false
-            authorization_policy: 'one_factor'
+            authorization_policy: 'client_policy'
             redirect_uris:
               - 'https://audiobook.icytv.de/auth/openid/callback'
               - 'https://audiobook.icytv.de/auth/openid/mobile-redirect'

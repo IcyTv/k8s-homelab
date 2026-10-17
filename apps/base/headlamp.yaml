@@ -117,6 +117,12 @@ subjects:
   - kind: User
     name: michael.finger@icytv.de
     apiGroup: rbac.authorization.k8s.io
+  - kind: Group
+    name: cluster-admins
+    apiGroup: rbac.authorization.k8s.io
+  - kind: Group
+    name: admins
+    apiGroup: rbac.authorization.k8s.io
 roleRef:
   kind: ClusterRole
   name: cluster-admin

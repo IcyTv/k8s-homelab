@@ -17,8 +17,15 @@ spec:
     - host: auth.icytv.de
       http:
         paths:
-          - path: /
+          - path: /oauth
             pathType: Prefix
+            backend:
+              service:
+                name: authelia
+                port:
+                  number: 9091
+          - path: /.well-known/openid-configuration
+            pathType: Exact
             backend:
               service:
                 name: authelia

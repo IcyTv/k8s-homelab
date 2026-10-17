@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lldap
+  namespace: lldap
+  labels:
+    app.kubernetes.io/name: lldap
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: lldap
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: lldap
+    spec:
+      enableServiceLinks: false
+      containers:
+        - name: lldap
+          image: docker.io/lldap/lldap:v0.6.3-alpine
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: TZ
+              value: Europe/Berlin
+            - name: LLDAP_LDAP_BASE_DN
+              value: "dc=icytv,dc=de"
+            - name: LLDAP_HTTP_URL
+              value: "https://auth.icytv.de"
+            - name: LLDAP_JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: lldap-secrets
+                  key: jwt-secret
+            - name: LLDAP_KEY_SEED
+              valueFrom:
+                secretKeyRef:
+                  name: lldap-secrets
+                  key: key-seed
+            - name: LLDAP_LDAP_USER_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: lldap-secrets
+                  key: admin-password
+          ports:
+            - name: http
+              containerPort: 17170
+              protocol: TCP
+            - name: ldap
+              containerPort: 3890
+              protocol: TCP
+          livenessProbe:
+            tcpSocket:
+              port: 17170
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          readinessProbe:
+            tcpSocket:
+              port: 17170
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: 5m
+              memory: 15Mi
+            limits:
+              memory: 64Mi
+          volumeMounts:
+            - name: data
+              mountPath: /data
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: lldap-data

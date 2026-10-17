@@ -59,9 +59,6 @@ spec:
             - name: config
               mountPath: /config/configuration.yml
               subPath: configuration.yml
-            - name: users
-              mountPath: /config/users_database.yml
-              subPath: users_database.yml
             - name: secrets
               mountPath: /secrets
               readOnly: true
@@ -71,9 +68,6 @@ spec:
         - name: config
           configMap:
             name: authelia-config
-        - name: users
-          secret:
-            secretName: authelia-users
         - name: secrets
           secret:
             secretName: authelia-secrets
