@@ -20,12 +20,34 @@ spec:
       labels:
         app.kubernetes.io/name: paperless-ngx
     spec:
+      # Start Redis before Paperless's blocking postStart hook can run.
+      initContainers:
+        - name: broker
+          image: valkey/valkey:9-alpine
+          restartPolicy: Always
+          startupProbe:
+            exec:
+              command: [valkey-cli, ping]
+            periodSeconds: 2
+            failureThreshold: 15
+          volumeMounts:
+            - name: redisdata
+              mountPath: /data
       containers:
         - name: paperless-ngx
           image: paperlessngx/paperless-ngx:latest
           ports:
             - containerPort: 8000
               name: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+              httpHeaders:
+                - name: Host
+                  value: docs.icytv.de
+            periodSeconds: 5
+            timeoutSeconds: 3
           env:
             - name: PAPERLESS_REDIS
               value: redis://localhost:6379
@@ -107,12 +129,6 @@ spec:
               mountPath: /usr/src/paperless/media
             - name: consume
               mountPath: /usr/src/paperless/consume
-        - name: broker
-          image: valkey/valkey:9-alpine
-          volumeMounts:
-            - name: redisdata
-              mountPath: /data
-            
       volumes:
         - name: data
           persistentVolumeClaim:
