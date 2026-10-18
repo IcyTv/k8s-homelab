@@ -170,6 +170,9 @@ spec:
               mountPath: /usr/src/paperless/media
             - name: consume
               mountPath: /usr/src/paperless/consume
+            - name: ai-prompts
+              mountPath: /usr/src/paperless/src/paperless_ai/prompts/classification.j2
+              subPath: classification.j2
       volumes:
         - name: data
           persistentVolumeClaim:
@@ -180,6 +183,9 @@ spec:
         - name: consume
           persistentVolumeClaim:
             claimName: paperless-ngx-consume
+        - name: ai-prompts
+          configMap:
+            name: paperless-ai-prompts
         - name: redisdata
           persistentVolumeClaim:
             claimName: paperless-ngx-redisdata

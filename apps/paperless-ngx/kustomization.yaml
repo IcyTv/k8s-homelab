@@ -5,6 +5,7 @@ resources:
   - secret-key.yaml
   - oidc-secret.yaml
   - gmail-oauth-secret.yaml
+  - ai-prompts.yaml
   - deployment.yaml
   - service.yaml
   - ingress.yaml
