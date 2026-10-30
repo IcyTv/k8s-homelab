@@ -1,4 +1,4 @@
 manifests/*/charts
 kubeconfig.yaml
-kubeconfig.hetzner.yaml
+kubeconfig.*.yaml
 .direnv/
