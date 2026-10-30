@@ -61,7 +61,7 @@ Paths are relative to the subaccount's restricted root; do not repeat
 ```text
 backups/homeserver/    # directory configured in Hetzner, invisible parent to subaccount
   .ssh/
-  homeassistant/      # planned first Restic repository
+  homeassistant/      # Home Assistant Restic repository
   another-app/        # future independent Restic repository
 ```
 
@@ -83,6 +83,12 @@ integrity checks for both restored SQLite databases, and isolated Home Assistant
 2026.10.4 startup with HTTP 200. The restored test instance had automations
 disabled, no Zigbee device, and verified external network blocking. A full
 `restic check --read-data` of the initial repository also passed.
+
+After migration to Rocky Linux 10.2, the native archive from 2026-10-30 at 03:34
+Europe/Berlin was uploaded and restored again. Its checksum, native decryption,
+login/illuminance configuration fixes, custom integrations, and both SQLite
+databases passed validation. A full repository data check passed as well. Shared
+SELinux volume access was verified with enforcement enabled.
 
 Check the `homeassistant-backup-export` CronJob and the `homeassistant`
 ReplicationSource in namespace `homeassistant`. The exporter has narrowly scoped
