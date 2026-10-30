@@ -9,9 +9,7 @@ spec:
   interval: 1m0s
   ref:
     branch: home
-  secretRef:
-    name: flux-system
-  url: ssh://git@github.com/IcyTv/k8s-homelab
+  url: https://github.com/IcyTv/k8s-homelab
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
