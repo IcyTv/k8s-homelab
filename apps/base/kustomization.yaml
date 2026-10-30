@@ -6,3 +6,4 @@ resources:
   - homeassistant.yaml
   - traefik.yaml
   - tailscale.yaml
+  - volsync.yaml
