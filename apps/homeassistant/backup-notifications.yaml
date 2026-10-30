@@ -9,8 +9,8 @@ automation:
     actions:
       - action: persistent_notification.create
         data:
-          notification_id: offsite_backup_failed
-          title: Home Assistant offsite backup failed
+          notification_id: "{{ 'offsite_backup_test' if trigger.json.get('test', false) else 'offsite_backup_failed' }}"
+          title: "{{ 'Backup notification test' if trigger.json.get('test', false) else 'Home Assistant offsite backup failed' }}"
           message: "{{ trigger.json.message }}"
   - id: k8s_native_backup_failed
     alias: Home Assistant native backup failed

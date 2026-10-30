@@ -71,6 +71,18 @@ The native backup schedule/three-copy retention is owned by Home Assistant's UI,
 not rewritten by Flux. Offsite retention is 7 daily, 4 weekly, and 6 monthly
 snapshots, with pruning every seven days. Because native archives are encrypted
 and compressed, deduplication between different native archives is limited.
+The `homeassistant-backup-check` CronJob reads and checks all repository data
+every Sunday at 07:00 Europe/Berlin, reporting errors through the same webhook.
+With the current native settings, Home Assistant starts daily around 04:45 with
+up to one hour of jitter. The hourly exporter therefore does not rely on an
+assumed fixed native completion time.
+
+Initial validation on 2026-10-30 passed: a disposable SFTP round-trip (content,
+hidden files, modes, ownership, SQLite), a real offsite archive restore/decryption,
+integrity checks for both restored SQLite databases, and isolated Home Assistant
+2026.10.4 startup with HTTP 200. The restored test instance had automations
+disabled, no Zigbee device, and verified external network blocking. A full
+`restic check --read-data` of the initial repository also passed.
 
 Check the `homeassistant-backup-export` CronJob and the `homeassistant`
 ReplicationSource in namespace `homeassistant`. The exporter has narrowly scoped

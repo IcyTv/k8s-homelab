@@ -31,7 +31,7 @@ finish() {
 }
 trap finish EXIT
 
-status=$(request -w '%{http_code}' -o /tmp/source.json "$api$resource") || [ "$status" = 404 ]
+status=$(request --no-fail -w '%{http_code}' -o /tmp/source.json "$api$resource")
 [ "$status" = 200 ] || [ "$status" = 404 ] || exit 1
 if [ "$status" = 200 ] && jq -e '.status.conditions[]? | select(.type == "Synchronizing" and .status == "True")' /tmp/source.json >/dev/null; then
     echo 'An upload is still active; refusing to replace its source archive' >&2

@@ -1,0 +1,95 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: homeassistant-backup-check
+  namespace: homeassistant
+spec:
+  schedule: "0 7 * * 0"
+  timeZone: Europe/Berlin
+  suspend: false
+  concurrencyPolicy: Forbid
+  startingDeadlineSeconds: 3600
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 0
+      activeDeadlineSeconds: 3600
+      template:
+        metadata:
+          labels:
+            backups.homelab/component: homeassistant-export
+        spec:
+          automountServiceAccountToken: false
+          restartPolicy: Never
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+            fsGroup: 1000
+            seccompProfile: {type: RuntimeDefault}
+          containers:
+            - name: check
+              image: quay.io/backube/volsync:0.17.0
+              command:
+                - /bin/bash
+                - -ec
+                - |
+                  notify_failure() {
+                    code=$?
+                    if [ "$code" -ne 0 ]; then
+                      curl --fail --silent --show-error --connect-timeout 5 --max-time 15 -H 'Content-Type: application/json' --data '{"message":"The weekly Restic repository integrity check failed. Inspect the homeassistant-backup-check Job."}' "http://homeassistant.homeassistant.svc.cluster.local:8123/api/webhook/$(cat /mnt/ssh/HA_BACKUP_WEBHOOK_ID)" >/dev/null || true
+                    fi
+                    exit "$code"
+                  }
+                  trap notify_failure EXIT
+                  restic check --read-data
+              env:
+                - {name: RESTIC_CACHE_DIR, value: /cache}
+                - name: RESTIC_REPOSITORY
+                  valueFrom: {secretKeyRef: {name: storagebox-backup, key: RESTIC_REPOSITORY}}
+                - name: RESTIC_PASSWORD
+                  valueFrom: {secretKeyRef: {name: storagebox-backup, key: RESTIC_PASSWORD}}
+                - name: RCLONE_CONFIG
+                  valueFrom: {secretKeyRef: {name: storagebox-backup, key: RCLONE_CONFIG}}
+                - name: RCLONE_CONFIG_STORAGEBOX_TYPE
+                  valueFrom: {secretKeyRef: {name: storagebox-backup, key: RCLONE_CONFIG_STORAGEBOX_TYPE}}
+                - name: RCLONE_CONFIG_STORAGEBOX_HOST
+                  valueFrom: {secretKeyRef: {name: storagebox-backup, key: RCLONE_CONFIG_STORAGEBOX_HOST}}
+                - name: RCLONE_CONFIG_STORAGEBOX_USER
+                  valueFrom: {secretKeyRef: {name: storagebox-backup, key: RCLONE_CONFIG_STORAGEBOX_USER}}
+                - name: RCLONE_CONFIG_STORAGEBOX_PORT
+                  valueFrom: {secretKeyRef: {name: storagebox-backup, key: RCLONE_CONFIG_STORAGEBOX_PORT}}
+                - name: RCLONE_CONFIG_STORAGEBOX_KEY_FILE
+                  valueFrom: {secretKeyRef: {name: storagebox-backup, key: RCLONE_CONFIG_STORAGEBOX_KEY_FILE}}
+                - name: RCLONE_CONFIG_STORAGEBOX_KNOWN_HOSTS_FILE
+                  valueFrom: {secretKeyRef: {name: storagebox-backup, key: RCLONE_CONFIG_STORAGEBOX_KNOWN_HOSTS_FILE}}
+                - name: RCLONE_CONFIG_STORAGEBOX_HOST_KEY_ALGORITHMS
+                  valueFrom: {secretKeyRef: {name: storagebox-backup, key: RCLONE_CONFIG_STORAGEBOX_HOST_KEY_ALGORITHMS}}
+                - name: RCLONE_CONFIG_STORAGEBOX_SHELL_TYPE
+                  valueFrom: {secretKeyRef: {name: storagebox-backup, key: RCLONE_CONFIG_STORAGEBOX_SHELL_TYPE}}
+                - name: RCLONE_CONFIG_STORAGEBOX_DISABLE_HASHCHECK
+                  valueFrom: {secretKeyRef: {name: storagebox-backup, key: RCLONE_CONFIG_STORAGEBOX_DISABLE_HASHCHECK}}
+              securityContext:
+                readOnlyRootFilesystem: true
+                allowPrivilegeEscalation: false
+                capabilities: {drop: [ALL]}
+              resources:
+                requests: {cpu: 50m, memory: 128Mi}
+                limits: {cpu: "1", memory: 512Mi}
+              volumeMounts:
+                - {name: credentials, mountPath: /mnt/ssh, readOnly: true}
+                - {name: cache, mountPath: /cache}
+                - {name: tmp, mountPath: /tmp}
+          volumes:
+            - name: credentials
+              secret:
+                secretName: storagebox-backup
+                defaultMode: 0440
+                items:
+                  - {key: SSH_PRIVATE_KEY, path: SSH_PRIVATE_KEY}
+                  - {key: SSH_KNOWN_HOSTS, path: SSH_KNOWN_HOSTS}
+                  - {key: HA_BACKUP_WEBHOOK_ID, path: HA_BACKUP_WEBHOOK_ID}
+            - name: cache
+              emptyDir: {sizeLimit: 512Mi}
+            - name: tmp
+              emptyDir: {sizeLimit: 256Mi}

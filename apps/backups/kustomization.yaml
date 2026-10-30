@@ -5,6 +5,7 @@ resources:
   - export-volume.yaml
   - export-rbac.yaml
   - export-cronjob.yaml
+  - check-cronjob.yaml
 configMapGenerator:
   - name: homeassistant-backup-export
     namespace: homeassistant

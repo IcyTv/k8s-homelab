@@ -6,8 +6,7 @@ metadata:
 spec:
   schedule: "15 * * * *"
   timeZone: Europe/Berlin
-  # Enable only after the first real backup/restore test passes.
-  suspend: true
+  suspend: false
   concurrencyPolicy: Forbid
   startingDeadlineSeconds: 1800
   successfulJobsHistoryLimit: 2
