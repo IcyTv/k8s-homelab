@@ -14,7 +14,12 @@
       "cacheCapacity": "256Mi",
       "pruneIntervalDays": 7,
       "retain": {"daily": 7, "weekly": 4, "monthly": 6},
-      "moverSecurityContext": {"runAsUser": 1000, "runAsGroup": 1000, "fsGroup": 1000},
+      "moverSecurityContext": {
+        "runAsUser": 1000,
+        "runAsGroup": 1000,
+        "fsGroup": 1000,
+        "seLinuxOptions": {"level": "s0"}
+      },
       "moverResources": {
         "requests": {"cpu": "50m", "memory": "128Mi"},
         "limits": {"cpu": "1", "memory": "512Mi"}

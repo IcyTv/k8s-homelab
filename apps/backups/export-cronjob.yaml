@@ -26,6 +26,9 @@ spec:
             runAsUser: 1000
             runAsGroup: 1000
             fsGroup: 1000
+            # Shares local volumes with HA/VolSync; use the shared file category.
+            seLinuxOptions:
+              level: s0
             seccompProfile:
               type: RuntimeDefault
           containers:

@@ -89,6 +89,21 @@ ReplicationSource in namespace `homeassistant`. The exporter has narrowly scoped
 permission to create Sources and get/patch only its named Source; it cannot stop
 Home Assistant or change Flux. Its live configuration mount is read-only.
 
+On SELinux hosts, the exporter and mover use the shared `s0` category for their
+shared local volumes. SELinux remains enforcing. The host's configuration path
+must have a persistent `container_file_t` label:
+
+```sh
+sudo semanage fcontext -a -t container_file_t '/home/michael/\.config/homeassistant(/.*)?'
+sudo restorecon -RFv /home/michael/.config/homeassistant
+```
+
+For recovery from a mover that used a private MCS category, a read-only mount
+does not relabel its staging volume. Before extraction, mount that staging PVC
+once read-write in a short-lived pod with `seLinuxOptions.level: s0`; the runtime
+relabels it. Then restore from a read-only mount at the same context. Do not
+disable SELinux or make the restore pod privileged to bypass a label mismatch.
+
 Failures and stale archives send an internal webhook to Home Assistant, which
 creates a persistent notification. Native backup failures also create one.
 The package is mounted at `/config/k8s_packages/backups.yaml`; Home Assistant's
