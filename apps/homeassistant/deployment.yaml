@@ -22,6 +22,9 @@ spec:
         runAsUser: 1000
         runAsGroup: 1000
         supplementalGroups: [18]
+        # The backup exporter reads this same local PVC.
+        seLinuxOptions:
+          level: s0
       containers:
         - name: homeassistant
           # Flux Image Automation marker references ImagePolicy flux-system:homeassistant

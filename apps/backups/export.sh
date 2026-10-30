@@ -16,12 +16,15 @@ request() {
 }
 
 notify() {
-    curl --fail --silent --show-error --connect-timeout 5 --max-time 15 \
+    if curl --fail --silent --show-error --connect-timeout 5 --max-time 15 \
         --retry 6 --retry-all-errors --retry-delay 5 --retry-max-time 60 \
         -H 'Content-Type: application/json' \
         --data '{"message":"Home Assistant offsite backup failed or its native archive is older than 36 hours. Check the backups Job and VolSync ReplicationSource in the homeassistant namespace."}' \
-        "http://homeassistant.homeassistant.svc.cluster.local/api/webhook/$(cat /notifications/HA_BACKUP_WEBHOOK_ID)" >/dev/null || \
+        "http://homeassistant.homeassistant.svc.cluster.local/api/webhook/$(cat /notifications/HA_BACKUP_WEBHOOK_ID)" >/dev/null; then
+        echo 'Backup failure notification delivered'
+    else
         echo 'WARNING: Could not deliver the Home Assistant backup notification' >&2
+    fi
 }
 
 finish() {
@@ -41,6 +44,8 @@ fi
 
 # The BackupStore records a backup only after its archive has been written and
 # uploads to native backup agents have finished (HA 2026.10.4).
+[ -r /source/.storage/backup ] || { echo 'Native backup metadata is unreadable; check volume permissions and SELinux labels' >&2; exit 1; }
+[ -r /source/backups ] && [ -x /source/backups ] || { echo 'Native backup directory is unreadable; check volume permissions and SELinux labels' >&2; exit 1; }
 latest=
 backup_id=
 for archive in /source/backups/*.tar; do
