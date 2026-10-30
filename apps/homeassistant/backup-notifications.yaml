@@ -1,0 +1,28 @@
+automation:
+  - id: k8s_offsite_backup_failed
+    alias: Kubernetes offsite backup failed
+    triggers:
+      - trigger: webhook
+        webhook_id: !env_var HA_BACKUP_WEBHOOK_ID
+        allowed_methods: [POST]
+        local_only: true
+    actions:
+      - action: persistent_notification.create
+        data:
+          notification_id: offsite_backup_failed
+          title: Home Assistant offsite backup failed
+          message: "{{ trigger.json.message }}"
+  - id: k8s_native_backup_failed
+    alias: Home Assistant native backup failed
+    triggers:
+      - trigger: state
+        entity_id: event.backup_automatic_backup
+    conditions:
+      - condition: template
+        value_template: "{{ trigger.to_state is not none and trigger.to_state.attributes.get('event_type') == 'failed' }}"
+    actions:
+      - action: persistent_notification.create
+        data:
+          notification_id: native_backup_failed
+          title: Home Assistant native backup failed
+          message: Check Settings > System > Backups before relying on the offsite copy.

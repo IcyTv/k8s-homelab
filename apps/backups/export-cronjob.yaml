@@ -1,0 +1,69 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: homeassistant-backup-export
+  namespace: homeassistant
+spec:
+  schedule: "15 * * * *"
+  timeZone: Europe/Berlin
+  # Enable only after the first real backup/restore test passes.
+  suspend: true
+  concurrencyPolicy: Forbid
+  startingDeadlineSeconds: 1800
+  successfulJobsHistoryLimit: 2
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 0
+      activeDeadlineSeconds: 1200
+      template:
+        metadata:
+          labels:
+            backups.homelab/component: homeassistant-export
+        spec:
+          serviceAccountName: homeassistant-backup-export
+          restartPolicy: Never
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+            fsGroup: 1000
+            seccompProfile:
+              type: RuntimeDefault
+          containers:
+            - name: export
+              # Reuse HA's cached image and its tar/jq/curl tools, not its entrypoint.
+              image: homeassistant/home-assistant:2026.10.4
+              command: [/bin/sh, /scripts/export.sh]
+              securityContext:
+                allowPrivilegeEscalation: false
+                capabilities: {drop: [ALL]}
+              resources:
+                requests:
+                  cpu: 25m
+                  memory: 64Mi
+                limits:
+                  cpu: 500m
+                  memory: 256Mi
+              volumeMounts:
+                - {name: scripts, mountPath: /scripts, readOnly: true}
+                - {name: source, mountPath: /source, readOnly: true}
+                - {name: export, mountPath: /export}
+                - {name: notifications, mountPath: /notifications, readOnly: true}
+          volumes:
+            - name: scripts
+              configMap:
+                name: homeassistant-backup-export
+            - name: source
+              persistentVolumeClaim:
+                claimName: homeassistant-config
+                readOnly: true
+            - name: export
+              persistentVolumeClaim:
+                claimName: homeassistant-backup-export
+            - name: notifications
+              secret:
+                secretName: storagebox-backup
+                defaultMode: 0440
+                items:
+                  - key: HA_BACKUP_WEBHOOK_ID
+                    path: HA_BACKUP_WEBHOOK_ID

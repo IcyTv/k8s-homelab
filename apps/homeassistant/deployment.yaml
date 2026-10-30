@@ -34,6 +34,11 @@ spec:
           env:
             - name: TZ
               value: "Europe/Berlin"
+            - name: HA_BACKUP_WEBHOOK_ID
+              valueFrom:
+                secretKeyRef:
+                  name: storagebox-backup
+                  key: HA_BACKUP_WEBHOOK_ID
 
           securityContext:
             privileged: true
@@ -43,6 +48,9 @@ spec:
               mountPath: /config
             - name: zigbee-usb
               mountPath: /dev/zigbee
+            - name: backup-notifications
+              mountPath: /config/k8s_packages
+              readOnly: true
           
           readinessProbe:
             httpGet:
@@ -58,6 +66,9 @@ spec:
             periodSeconds: 15
 
       volumes:
+        - name: backup-notifications
+          configMap:
+            name: homeassistant-backup-notifications
         - name: config
           persistentVolumeClaim:
             claimName: homeassistant-config

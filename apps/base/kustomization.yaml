@@ -8,3 +8,4 @@ resources:
   - tailscale.yaml
   - volsync.yaml
   - snapshot-controller.yaml
+  - backups.yaml

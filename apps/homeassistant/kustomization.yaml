@@ -6,4 +6,8 @@ resources:
   - ./service.yaml
   - ./ingress.yaml
   # - ./image-automation.yaml
-
+configMapGenerator:
+  - name: homeassistant-backup-notifications
+    namespace: homeassistant
+    files:
+      - backups.yaml=backup-notifications.yaml

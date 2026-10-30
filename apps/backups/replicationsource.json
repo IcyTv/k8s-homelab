@@ -1,0 +1,39 @@
+{
+  "apiVersion": "volsync.backube/v1alpha1",
+  "kind": "ReplicationSource",
+  "metadata": {
+    "name": "homeassistant",
+    "namespace": "homeassistant"
+  },
+  "spec": {
+    "sourcePVC": "homeassistant-backup-export",
+    "restic": {
+      "copyMethod": "Direct",
+      "repository": "storagebox-backup",
+      "cacheStorageClassName": "local-path",
+      "cacheCapacity": "256Mi",
+      "pruneIntervalDays": 7,
+      "retain": {"daily": 7, "weekly": 4, "monthly": 6},
+      "moverSecurityContext": {"runAsUser": 1000, "runAsGroup": 1000, "fsGroup": 1000},
+      "moverResources": {
+        "requests": {"cpu": "50m", "memory": "128Mi"},
+        "limits": {"cpu": "1", "memory": "512Mi"}
+      },
+      "moverVolumes": [
+        {
+          "mountPath": "ssh",
+          "volumeSource": {
+            "secret": {
+              "secretName": "storagebox-backup",
+              "defaultMode": 288,
+              "items": [
+                {"key": "SSH_PRIVATE_KEY", "path": "SSH_PRIVATE_KEY"},
+                {"key": "SSH_KNOWN_HOSTS", "path": "SSH_KNOWN_HOSTS"}
+              ]
+            }
+          }
+        }
+      ]
+    }
+  }
+}
