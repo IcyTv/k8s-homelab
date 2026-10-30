@@ -7,3 +7,4 @@ resources:
   - traefik.yaml
   - tailscale.yaml
   - volsync.yaml
+  - snapshot-controller.yaml
