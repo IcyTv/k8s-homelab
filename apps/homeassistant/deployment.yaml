@@ -21,7 +21,7 @@ spec:
       securityContext:
         runAsUser: 1000
         runAsGroup: 1000
-        supplementalGroups: [20, 986]
+        supplementalGroups: [18]
       containers:
         - name: homeassistant
           # Flux Image Automation marker references ImagePolicy flux-system:homeassistant
