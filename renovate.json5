@@ -12,7 +12,7 @@
     "apps/*/image-automation.yaml"
   ],
   "baseBranchPatterns": ["hetzner", "home"],
-  "platformAutomerge": false,
+  "platformAutomerge": true,
   "pinDigests": false,
   "separateMinorPatch": true,
   "minimumReleaseAgeBehaviour": "timestamp-required",
