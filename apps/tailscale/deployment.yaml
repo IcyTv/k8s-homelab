@@ -36,6 +36,14 @@ spec:
                 secretKeyRef:
                   name: tailscale-auth
                   key: authkey
+            - name: TS_AUTH_ONCE
+              value: "true"
+            - name: TS_ENABLE_HEALTH_CHECK
+              value: "true"
+            - name: TS_LOCAL_ADDR_PORT
+              value: "127.0.0.1:9002"
+            - name: TS_DEBUG_FIREWALL_MODE
+              value: nftables
             - name: TS_STATE_DIR
               value: /var/lib/tailscale
             - name: TS_USERSPACE
@@ -63,6 +71,14 @@ spec:
               mountPath: /var/lib/tailscale
             - name: dev-net-tun
               mountPath: /dev/net/tun
+          readinessProbe:
+            httpGet:
+              host: 127.0.0.1
+              path: /healthz
+              port: 9002
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 2
           resources:
             requests:
               cpu: 25m
