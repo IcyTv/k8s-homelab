@@ -5,6 +5,7 @@ resources:
   - cloudflared.yaml
   - homeassistant.yaml
   - traefik.yaml
+  - traefik-config.yaml
   - tailscale.yaml
   - volsync.yaml
   - snapshot-controller.yaml
