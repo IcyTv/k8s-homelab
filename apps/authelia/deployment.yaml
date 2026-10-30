@@ -25,7 +25,7 @@ spec:
         fsGroup: 1000
       containers:
         - name: authelia
-          image: docker.io/authelia/authelia:4.38.19
+          image: docker.io/authelia/authelia:4.39.28
           imagePullPolicy: IfNotPresent
           args:
             - "--config"
