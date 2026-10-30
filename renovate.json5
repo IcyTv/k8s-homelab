@@ -11,6 +11,7 @@
     "apps/base/image-update-automation.yaml",
     "apps/*/image-automation.yaml"
   ],
+  "baseBranchPatterns": ["hetzner", "home"],
   "platformAutomerge": false,
   "pinDigests": false,
   "separateMinorPatch": true,
