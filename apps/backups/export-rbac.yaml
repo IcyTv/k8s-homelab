@@ -44,7 +44,10 @@ spec:
   policyTypes: [Ingress]
   ingress:
     - from:
-        - podSelector:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: homeassistant
+          podSelector:
             matchLabels:
               backups.homelab/component: homeassistant-export
       ports:

@@ -37,7 +37,7 @@ spec:
                   notify_failure() {
                     code=$?
                     if [ "$code" -ne 0 ]; then
-                      curl --fail --silent --show-error --connect-timeout 5 --max-time 15 -H 'Content-Type: application/json' --data '{"message":"The weekly Restic repository integrity check failed. Inspect the homeassistant-backup-check Job."}' "http://homeassistant.homeassistant.svc.cluster.local:8123/api/webhook/$(cat /mnt/ssh/HA_BACKUP_WEBHOOK_ID)" >/dev/null || true
+                      curl --fail --silent --show-error --connect-timeout 5 --max-time 15 --retry 6 --retry-all-errors --retry-delay 5 --retry-max-time 60 -H 'Content-Type: application/json' --data '{"message":"The weekly Restic repository integrity check failed. Inspect the homeassistant-backup-check Job."}' "http://homeassistant.homeassistant.svc.cluster.local/api/webhook/$(cat /mnt/ssh/HA_BACKUP_WEBHOOK_ID)" >/dev/null || true
                     fi
                     exit "$code"
                   }

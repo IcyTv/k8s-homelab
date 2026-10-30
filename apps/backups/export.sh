@@ -17,9 +17,10 @@ request() {
 
 notify() {
     curl --fail --silent --show-error --connect-timeout 5 --max-time 15 \
+        --retry 6 --retry-all-errors --retry-delay 5 --retry-max-time 60 \
         -H 'Content-Type: application/json' \
         --data '{"message":"Home Assistant offsite backup failed or its native archive is older than 36 hours. Check the backups Job and VolSync ReplicationSource in the homeassistant namespace."}' \
-        "http://homeassistant.homeassistant.svc.cluster.local:8123/api/webhook/$(cat /notifications/HA_BACKUP_WEBHOOK_ID)" >/dev/null || \
+        "http://homeassistant.homeassistant.svc.cluster.local/api/webhook/$(cat /notifications/HA_BACKUP_WEBHOOK_ID)" >/dev/null || \
         echo 'WARNING: Could not deliver the Home Assistant backup notification' >&2
 }
 
