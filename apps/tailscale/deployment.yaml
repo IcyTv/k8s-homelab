@@ -43,7 +43,8 @@ spec:
             - name: TS_LOCAL_ADDR_PORT
               value: "127.0.0.1:9002"
             - name: TS_DEBUG_FIREWALL_MODE
-              value: nftables
+              # Native nftables rules break K3s iptables-save policy synchronization.
+              value: iptables
             - name: TS_STATE_DIR
               value: /var/lib/tailscale
             - name: TS_USERSPACE
