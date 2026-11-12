@@ -34,7 +34,7 @@ spec:
           containers:
             - name: export
               # Reuse HA's cached image and its tar/jq/curl tools, not its entrypoint.
-              image: homeassistant/home-assistant:2026.11.0
+              image: homeassistant/home-assistant:2026.11.1
               command: [/bin/sh, /scripts/export.sh]
               securityContext:
                 allowPrivilegeEscalation: false
