@@ -84,12 +84,39 @@ data:
                 subject:
                   - 'group:cluster-admins'
                   - 'group:admins'
+          homeassistant_policy:
+            default_policy: 'deny'
+            rules:
+              - policy: 'two_factor'
+                subject: 'group:2fa'
+              - policy: 'one_factor'
+                subject: 'group:admins'
           client_policy:
             default_policy: 'one_factor'
             rules:
               - policy: 'two_factor'
                 subject: 'group:2fa'
         clients:
+          - client_id: 'homeassistant'
+            client_name: 'Home Assistant'
+            public: true
+            require_pkce: true
+            pkce_challenge_method: 'S256'
+            authorization_policy: 'homeassistant_policy'
+            consent_mode: 'implicit'
+            redirect_uris:
+              - 'https://assistant.icytv.de/auth/oidc/callback'
+            scopes:
+              - 'openid'
+              - 'profile'
+              - 'email'
+              - 'groups'
+            response_types:
+              - 'code'
+            grant_types:
+              - 'authorization_code'
+            token_endpoint_auth_method: 'none'
+
           - client_id: 'CT7sh7bEIljUcAd8PxQjOJiBUflkywbhNJ1ZXaLE'
             client_name: 'Headlamp'
             client_secret: '$pbkdf2-sha512$310000$0exgyPUqIBwco.86TvU0Mw$TX0jhaa6yEsYrwopyTTqMccZM.w519YZsYFLkNFG4ADcMnWrBsfcFKv1FtJK3ufdarECO9WYNgkd/weiFKlkwA'
