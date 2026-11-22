@@ -30,6 +30,10 @@ spec:
     ports:
       web:
         http: {}
+        # Trust X-Forwarded-For from cloudflared pods so Home Assistant sees real client IPs.
+        forwardedHeaders:
+          trustedIPs:
+            - 10.42.0.0/16
       websecure:
         http:
           middlewares:
@@ -38,3 +42,5 @@ spec:
     service:
       spec:
         type: LoadBalancer
+        # Preserve LAN client source IPs instead of SNAT to the node/svclb.
+        externalTrafficPolicy: Local
