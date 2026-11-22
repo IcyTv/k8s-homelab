@@ -3,7 +3,8 @@
 # Restic scheduling/retention/restoration remain the operator's responsibility.
 set -eu
 set -o pipefail
-umask 077
+# Group (1000) read access: the job runs as root, the VolSync mover as uid 1000.
+umask 027
 
 api=https://kubernetes.default.svc
 sa=/var/run/secrets/kubernetes.io/serviceaccount

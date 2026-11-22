@@ -23,7 +23,9 @@ spec:
           serviceAccountName: homeassistant-backup-export
           restartPolicy: Never
           securityContext:
-            runAsUser: 1000
+            # Root so it can read HA's root-owned 0600 files under /config; the
+            # group stays 1000 so exported files remain readable by the VolSync mover.
+            runAsUser: 0
             runAsGroup: 1000
             fsGroup: 1000
             # Shares local volumes with HA/VolSync; use the shared file category.
@@ -38,7 +40,9 @@ spec:
               command: [/bin/sh, /scripts/export.sh]
               securityContext:
                 allowPrivilegeEscalation: false
-                capabilities: {drop: [ALL]}
+                # DAC_OVERRIDE: read HA files owned by other uids (0600) and
+                # write the export volume without owning it.
+                capabilities: {drop: [ALL], add: [DAC_OVERRIDE]}
               resources:
                 requests:
                   cpu: 25m

@@ -19,9 +19,6 @@ spec:
         app.kubernetes.io/name: homeassistant
     spec:
       securityContext:
-        runAsUser: 1000
-        runAsGroup: 1000
-        supplementalGroups: [18]
         # The backup exporter reads this same local PVC.
         seLinuxOptions:
           level: s0

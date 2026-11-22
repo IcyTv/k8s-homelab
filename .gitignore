@@ -2,3 +2,4 @@ manifests/*/charts
 kubeconfig.yaml
 kubeconfig.*.yaml
 .direnv/
+/opencode.json
