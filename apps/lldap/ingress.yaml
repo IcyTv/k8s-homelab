@@ -6,6 +6,8 @@ metadata:
   annotations:
     traefik.ingress.kubernetes.io/router.entrypoints: websecure
     traefik.ingress.kubernetes.io/service.serversscheme: http
+    # Authelia ForwardAuth: LLDAP admin UI requires admins + two_factor
+    traefik.ingress.kubernetes.io/router.middlewares: lldap-authelia-forwardauth@kubernetescrd
 spec:
   ingressClassName: traefik
   rules:
