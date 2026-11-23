@@ -6,4 +6,5 @@ resources:
   - secrets.sops.yaml
   - deployment.yaml
   - service.yaml
+  - middleware-forwardauth.yaml
   - ingress.yaml

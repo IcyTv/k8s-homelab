@@ -23,9 +23,18 @@ data:
       rules:
         - domain: 'auth.icytv.de'
           resources:
-            - '^/oauth([/?].*)?$'
-            - '^/\.well-known([/?].*)?$'
+            - '^/\.well-known/openid-configuration$'
           policy: 'bypass'
+        # LLDAP admin UI (everything on auth.icytv.de outside /oauth): admins only, always 2FA.
+        - domain: 'auth.icytv.de'
+          subject:
+            - 'group:admins'
+          policy: 'two_factor'
+        - domain: 'auth.icytv.de'
+          policy: 'deny'
+        # Paperless signing service: always 2FA.
+        - domain: 'sign.docs.icytv.de'
+          policy: 'two_factor'
         - domain: '*.icytv.de'
           subject:
             - 'group:2fa'
@@ -79,8 +88,6 @@ data:
             default_policy: 'deny'
             rules:
               - policy: 'two_factor'
-                subject: 'group:2fa'
-              - policy: 'one_factor'
                 subject:
                   - 'group:cluster-admins'
                   - 'group:admins'
@@ -88,8 +95,6 @@ data:
             default_policy: 'deny'
             rules:
               - policy: 'two_factor'
-                subject: 'group:2fa'
-              - policy: 'one_factor'
                 subject: 'group:admins'
           client_policy:
             default_policy: 'one_factor'
@@ -140,7 +145,7 @@ data:
             client_name: 'Paperless'
             client_secret: '$pbkdf2-sha512$310000$Jt/z1J3WAZ3u8DB2MBX/Tw$OaRCQac.2gblsPu86jtwtfaKLprvSOOks5LiHV58DdghMJAxkspb7PC3CsdYvEvvvMjkMNdqGRVOAe3nn12xGQ'
             public: false
-            authorization_policy: 'client_policy'
+            authorization_policy: 'two_factor'
             consent_mode: 'implicit'
             redirect_uris:
               - 'https://docs.icytv.de/accounts/oidc/authelia/login/callback/'

@@ -210,9 +210,18 @@ data:
       rules:
         - domain: 'auth.icytv.de'
           resources:
-            - '^/oauth([/?].*)?$'
-            - '^/\\.well-known([/?].*)?$'
+            - '^/\\.well-known/openid-configuration$'
           policy: 'bypass'
+        # LLDAP admin UI (everything on auth.icytv.de outside /oauth): admins only, always 2FA.
+        - domain: 'auth.icytv.de'
+          subject:
+            - 'group:admins'
+          policy: 'two_factor'
+        - domain: 'auth.icytv.de'
+          policy: 'deny'
+        # Paperless signing service: always 2FA.
+        - domain: 'sign.docs.icytv.de'
+          policy: 'two_factor'
         - domain: '*.icytv.de'
           subject:
             - 'group:2fa'
@@ -266,17 +275,40 @@ data:
             default_policy: 'deny'
             rules:
               - policy: 'two_factor'
-                subject: 'group:2fa'
-              - policy: 'one_factor'
                 subject:
                   - 'group:cluster-admins'
                   - 'group:admins'
+          homeassistant_policy:
+            default_policy: 'deny'
+            rules:
+              - policy: 'two_factor'
+                subject: 'group:admins'
           client_policy:
             default_policy: 'one_factor'
             rules:
               - policy: 'two_factor'
                 subject: 'group:2fa'
         clients:
+          - client_id: 'homeassistant'
+            client_name: 'Home Assistant'
+            public: true
+            require_pkce: true
+            pkce_challenge_method: 'S256'
+            authorization_policy: 'homeassistant_policy'
+            consent_mode: 'implicit'
+            redirect_uris:
+              - 'https://assistant.icytv.de/auth/oidc/callback'
+            scopes:
+              - 'openid'
+              - 'profile'
+              - 'email'
+              - 'groups'
+            response_types:
+              - 'code'
+            grant_types:
+              - 'authorization_code'
+            token_endpoint_auth_method: 'none'
+
           - client_id: 'CT7sh7bEIljUcAd8PxQjOJiBUflkywbhNJ1ZXaLE'
             client_name: 'Headlamp'
             client_secret: '{headlamp_hash}'
@@ -300,7 +332,7 @@ data:
             client_name: 'Paperless'
             client_secret: '{paperless_hash}'
             public: false
-            authorization_policy: 'client_policy'
+            authorization_policy: 'two_factor'
             consent_mode: 'implicit'
             redirect_uris:
               - 'https://docs.icytv.de/accounts/oidc/authelia/login/callback/'
