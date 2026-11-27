@@ -27,7 +27,7 @@ spec:
         # Bump OIDC_VERSION and OIDC_SHA256 together (sha256 of hass-oidc-auth.zip).
         - name: install-oidc-auth
           # Flux Image Automation marker references ImagePolicy flux-system:homeassistant
-          image: "homeassistant/home-assistant:2026.11.2" # {"$imagepolicy": "flux-system:homeassistant"}
+          image: "homeassistant/home-assistant:2026.11.3" # {"$imagepolicy": "flux-system:homeassistant"}
           imagePullPolicy: IfNotPresent
           env:
             - name: OIDC_VERSION
@@ -82,7 +82,7 @@ spec:
       containers:
         - name: homeassistant
           # Flux Image Automation marker references ImagePolicy flux-system:homeassistant
-          image: "homeassistant/home-assistant:2026.11.2" # {"$imagepolicy": "flux-system:homeassistant"}
+          image: "homeassistant/home-assistant:2026.11.3" # {"$imagepolicy": "flux-system:homeassistant"}
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
